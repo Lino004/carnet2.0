@@ -1,0 +1,35 @@
+body { background-color:#ffffff;display: flex;
+    flex-direction: column; }
+[class*="col"] { margin-bottom: 0px; }
+img { width: 100%;}
+.well {
+  background-color:#CCC;
+  padding: 20px;
+}
+ .navbar{
+  margin-top: 60px;
+}
+#competences{ width:830px; margin:0 auto; color:rgb(0,0,0); padding:0.8em; border-radius:10px; font-size:0.85em; }
+
+#div1{position:absolute; font-family:'Museo'; 
+width:70px; border-radius:10px;margin-left: 5px; overflow:hidden; height:50px; cursor:pointer;
+}
+
+#div1:hover, 
+#div1:focus{background-color:rgba(192,192,192,0.3); transition:background 0.5s ease, color 0.5s ease;}
+#div1:active, 
+#div1:focus{height:800px;width:300px; transition:height 0.3s ease; z-index:3;}
+#competences ul{margin:0; list-style:none; padding-left:10px;}
+li{text-shadow:1px 1px 1px #000 ;  text-align:center;color:#ffffff;margin-bottom: 15px;margin-top:75px;}
+
+#container
+{	
+	margin-top: 100px;
+margin-left: 0px;
+margin-right: 0px;
+ display: flex;
+}
+ 
+ #container .row {display: flex;}
+ h3{color: #000000;font-family: apple;}
+ img{border-radius: 10px;}
