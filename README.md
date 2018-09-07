@@ -2,7 +2,12 @@
 
 > Un projet fait en Vue js dont le principe est de permettre à l'utilisateur de pouvoir éditer, enregistrer, sauvegarder ou supprimer les événements importants de ses différents voyages.
 
-## Build Setup
+## Près requis pour déployer le projet sur votre machine
+
+``` bash
+Node.js (> = 6.x, 8.x préféré), npm version 3+ et Git
+```
+## Configuration de la construction
 
 ``` bash
 # intaller les dépendances
