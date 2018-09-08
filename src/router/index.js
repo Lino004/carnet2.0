@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import {auth} from '../firebase'
-
-import HelloWorld from '@/components/HelloWorld'
 import Acceuil from '@/components/Acceuil'
 import Login from '@/components/Login'
 import Inscription from '@/components/Inscription'
@@ -33,25 +31,15 @@ var router = new Router({
       path: '/acceuil',
       name: 'Acceuil',
       component: Acceuil,
-      meta: {
-        requiresAuth: true
+      beforeEnter: (to, from, next) => {
+        if (!auth.currentUser) {
+          next('/login')
+        } else {
+          next()
+        }
       }
-    },
-    {
-      path: '/hello',
-      name: 'Hello',
-      component: HelloWorld
     }
   ]
-})
-
-router.beforeEach((to, from, next) => {
-  var userActuel = auth.currentUser
-  var requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-
-  if (requiresAuth && !userActuel) next('login')
-  else if (!requiresAuth && userActuel) next('acceuil')
-  else next()
 })
 
 export default router

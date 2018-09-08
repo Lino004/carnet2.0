@@ -33,7 +33,7 @@
       <div class="navbar navbar-dark bg-dark box-shadow">
         <div class="container d-flex justify-content-between">
 <!--Bouton d'ajout d'un evenement-->
-          <a href="#" class="navbar-brand d-flex align-items-center" data-toggle="modal" data-target="#myModal">
+          <a href="#" class="navbar-brand d-flex align-items-center" @click="openNewEventModal">
             <i class="fa fa-plus"></i>&nbsp;
             <span>Add</span>
           </a>
@@ -87,7 +87,7 @@
         </div>
 <!--Bouton de navigation-->
           <div class="d-flex align-items-center">
-            <span class="navbar-brand"> {{userEmail}} </span>
+            <span class="navbar-brand"> {{currentUser.email}} </span>
             <button class="navbar-toggler d-flex" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -151,6 +151,7 @@
 
 <script>
 import {db, storage, auth} from '../firebase'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'acceuil',
@@ -193,6 +194,7 @@ export default {
     this.temp = this.events
   },
   computed: {
+    ...mapGetters(['currentUser']),
     champsRemplis () {
       if (this.newEven.titre !== '' && this.newEven.lieu !== '' && this.newEven.date !== null && this.newEven.recit !== '' && this.progressBar === 100 && this.newEven.imageUrl !== '') {
         return true
@@ -202,8 +204,12 @@ export default {
     }
   },
   methods: {
+    openNewEventModal () {
+      $("#myModal").modal('show')
+    },
     deconnecter () {
       auth.signOut().then(() => {
+        this.$store.dispatch('setUser', null)
         this.$router.replace('login')
       })
     },

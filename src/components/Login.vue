@@ -62,7 +62,7 @@ export default {
     verifier () {
       auth.signInWithEmailAndPassword(this.user.email, this.user.password).then(
         () => {
-          this.$router.replace('acceuil')
+          this.$router.push('/acceuil')
         },
         (err) => {
           switch (err.code) {

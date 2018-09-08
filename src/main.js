@@ -5,6 +5,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import VueFire from 'vuefire'
+import store from './store'
 
 Vue.config.productionTip = false
 Vue.use(VueFire)
@@ -12,13 +13,17 @@ Vue.use(VueFire)
 let app
 
 auth.onAuthStateChanged(function (user) {
+
+  store.dispatch('setUser', user)
+
   if (!app) {
-    /* eslint-disable no-new */
     app = new Vue({
       el: '#app',
       router,
+      store,
       components: { App },
       template: '<App/>'
     })
   }
+  
 })
