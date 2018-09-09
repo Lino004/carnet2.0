@@ -27,7 +27,7 @@
                         </div>
                     </div>
                     <div class="txt1 text-center p-t-54 p-b-20">
-                        <p>Vous n'avez pas de compte? <router-link to="/inscription"> <strong>Inscrivez vous ici</strong> </router-link> </p>
+                        <p>Vous n'avez pas de compte? <router-link to="/inscription"> <strong class="text-primary">Inscrivez vous ici</strong> </router-link> </p>
                         <span>Ou s'inscrire en utlisant</span>
                     </div>
                     <div class="flex-c-m">

@@ -32,7 +32,7 @@
                             <input class="form-control" type="password" placeholder="Mot de passe" id="passwordConfirme" v-model="passwordConfirme">
                         </div>
                         <div class="text-right p-t-8 p-b-31">
-                            <p>Ou <router-link to="/login">allez à la page de connexion</router-link></p>
+                            <p>Ou <router-link to="/login"><strong class="text-primary">allez à la page de connexion</strong></router-link></p>
                         </div>
 
                         <div class="alert alert-danger" v-show="etatErr" v-for="(erreur, index) in erreurs" :key="index" >
