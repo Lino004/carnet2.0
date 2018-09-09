@@ -31,15 +31,20 @@ var router = new Router({
       path: '/acceuil',
       name: 'Acceuil',
       component: Acceuil,
-      beforeEnter: (to, from, next) => {
-        if (!auth.currentUser) {
-          next('/login')
-        } else {
-          next()
-        }
+      meta: {
+        requiresAuth: true
       }
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  var userActuel = auth.currentUser
+  var requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+
+  if (requiresAuth && !userActuel) next('login')
+  else if (!requiresAuth && userActuel) next('acceuil')
+  else next()
 })
 
 export default router

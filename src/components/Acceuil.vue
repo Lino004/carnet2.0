@@ -87,7 +87,7 @@
         </div>
 <!--Bouton de navigation-->
           <div class="d-flex align-items-center">
-            <span class="navbar-brand"> {{currentUser.email}} </span>
+            <span class="navbar-brand"> {{currentUser.displayName}} </span>
             <button class="navbar-toggler d-flex" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
