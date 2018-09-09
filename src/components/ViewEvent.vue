@@ -6,7 +6,7 @@
 
                     <div :class="clas.container" v-for="event in events" :key="event.id">
 
-                        <div :class="clas.container2" style="wi">
+                        <div :class="clas.container2">
 
                             <div :class="clas.containerImg">
 
@@ -55,13 +55,13 @@ export default {
             userId: auth.currentUser.uid, // Récupère Id de l'utilisateur
             events: [], // Tableau receptionnant les informations sur les évenements
             view: false,
-            temp: [],
+            tempEvents: [],
             clas: {
                 container: 'col-md-4',
                 container2: 'card mb-4 box-shadow shadow-lg border-info',
                 containerImg: '',
                 Img: 'card-img-top',
-                styleImg: '',
+                styleImg: 'width: 100%; height: 100%;',
                 containerInfo: 'card-body bg-light'
             },
             textBntVoir: 'Voir +'
@@ -110,16 +110,16 @@ export default {
                 this.clas.container2 = 'row col-md-12'
                 this.clas.containerImg = 'col-md-6'
                 this.clas.Img = 'mb-4 mt-4'
-                this.clas.styleImg = 'width: 35rem'
+                this.clas.styleImg = 'width: 100%'
                 this.clas.containerInfo = 'col-md-6 pt-3'
             } else {
                 this.textBntVoir = 'Voir +'
-                this.events = this.temp
+                this.events = this.tempEvents
                 this.clas.container = 'col-md-4'
                 this.clas.container2 = 'card mb-4 box-shadow shadow-lg border-info'
                 this.clas.containerImg = ''
                 this.clas.Img = 'card-img-top'
-                this.clas.styleImg = ''
+                this.clas.styleImg = 'width: 100%; height: 100%;'
                 this.clas.containerInfo = 'card-body bg-light'
             }
         }
@@ -127,7 +127,7 @@ export default {
     mounted () {
         this.listenerEventAdd()
         this.listenerEventSupp()
-        this.temp = this.events
+        this.tempEvents = this.events
     },
     beforeDestroy () {
         this.detachListenerEvent()
