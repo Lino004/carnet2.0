@@ -33,58 +33,10 @@
       <div class="navbar navbar-dark bg-dark box-shadow">
         <div class="container d-flex justify-content-between">
 <!--Bouton d'ajout d'un evenement-->
-          <a href="#" class="navbar-brand d-flex align-items-center" @click="openNewEventModal">
+          <a href="#" class="navbar-brand d-flex align-items-center" @click="viewAddModal">
             <i class="fa fa-plus"></i>&nbsp;
             <span>Add</span>
           </a>
-<!--Fenetre popup d'ajout d'un evenement-->
-          <div class="modal fade" id="myModal" role="document">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title">Nouvelle Evenement</h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <div class="">
-                    <form>
-                      <div class="form-group">
-                        <label>Selectioner Image</label>
-                        <input type="file" class="form-control" multiple accept="image/*" @change="detectFiles($event.target.files)">
-                        <div class="progress">
-                          <div class="progress-bar bg-info" role="progressbar" :style="'width: ' + progressBar + '%'" :aria-valuenow="progressBar" aria-valuemin="0" :aria-valuemax="progressBar"></div>
-                        </div>
-                      </div>
-                      <div class="form-group" data-validate = "Un Pseudo est requis">
-                        <label>Titre</label>
-                        <input type="text" class="form-control" placeholder="titre" v-model="newEven.titre">
-                      </div>
-                      <div class="form-group">
-                        <label>Lieu</label>
-                        <input type="text" class="form-control" placeholder="Lieu" v-model="newEven.lieu">
-                      </div>
-                      <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" class="form-control" placeholder="Date" v-model="newEven.date">
-                      </div>
-                      <div class="form-group">
-                        <label>Commentaire</label>
-                        <textarea class="form-control" rows="3" v-model="newEven.recit"></textarea>
-                      </div>
-                      <div class="">
-                        <button type="button" data-toggle="modal" data-target="#myModal" class="form-control btn btn-info" @click.prevent="add" v-show="champsRemplis">Ajouter</button>
-                      </div>
-                      <div class="alert alert-warning" v-show="!champsRemplis" >
-                          <strong>Attention!</strong> Il est important de remplir tout les champs avant de pouvoir souvegarder l'évenement
-                      </div>
-                    </form>
-                  </div>
-                </div>
-            </div>
-          </div>
-        </div>
 <!--Bouton de navigation-->
           <div class="d-flex align-items-center">
             <span class="navbar-brand"> {{currentUser.displayName}} </span>
@@ -111,6 +63,8 @@
         <a class="nav-link disabled" href="#">Disabled</a>
       </li>
     </ul>
+    <new-event class="modal fade" id="addModal"></new-event>
+    <view-event></view-event>
 <!--Affichage des evenements-->
       <div class="album py-5 bg-light">
         <div class="container">
@@ -119,7 +73,7 @@
             <div :class="clas.container" v-for="event in events" :key="event.id">
               <div :class="clas.container2" style="wi">
                 <div :class="clas.containerImg">
-                  <img :class="clas.Img" :style="clas.styleImg" :src="event.urlImage" alt="Card image cap">
+                  <img :class="clas.Img" :style="clas.styleImg" :src="event.imageUrl" alt="Card image cap">
                   <div class="card-img-overlay d-flex align-items-start">
                     <h5 class="w-100 display-10 font-weight-bold p-3 bg-dark text-white">{{ event.titre }}</h5>
                   </div>
@@ -152,23 +106,19 @@
 <script>
 import {db, storage, auth} from '../firebase'
 import { mapGetters } from 'vuex'
+import NewEvent from './NewEvent'
+import ViewEvent from './ViewEvent'
 
 export default {
   name: 'acceuil',
+  components: {
+    NewEvent,
+    ViewEvent
+  },
   data () {
     return {
       userId: auth.currentUser.uid, // Récupère Id de l'utilisateur
-      userEmail: auth.currentUser.email,
-      stock: null,
       events: [], // Tableau receptionnant les informations sur les évenements
-      newEven: { // Objet récupérent les informations de saisie
-        titre: '',
-        lieu: '',
-        date: null,
-        recit: '',
-        imageUrl: null,
-        imageRef: null
-      },
       view: false,
       temp: [],
       clas: {
@@ -179,9 +129,7 @@ export default {
         styleImg: '',
         containerInfo: 'card-body bg-light'
       },
-      textBntVoir: 'Voir +',
-      uploadTask: null,
-      progressBar: 0
+      textBntVoir: 'Voir +'
     }
   },
   mounted () {
@@ -194,18 +142,11 @@ export default {
     this.temp = this.events
   },
   computed: {
-    ...mapGetters(['currentUser']),
-    champsRemplis () {
-      if (this.newEven.titre !== '' && this.newEven.lieu !== '' && this.newEven.date !== null && this.newEven.recit !== '' && this.progressBar === 100 && this.newEven.imageUrl !== '') {
-        return true
-      } else {
-        return false
-      }
-    }
+    ...mapGetters(['currentUser'])
   },
   methods: {
-    openNewEventModal () {
-      $("#myModal").modal('show')
+    viewAddModal () {
+      $("#addModal").modal('show')
     },
     deconnecter () {
       auth.signOut().then(() => {
@@ -213,24 +154,9 @@ export default {
         this.$router.replace('login')
       })
     },
-    add () {
-      db.ref(this.userId).push().set({
-        titre: this.newEven.titre,
-        lieu: this.newEven.lieu,
-        date: this.newEven.date,
-        recit: this.newEven.recit,
-        urlImage: this.newEven.imageUrl,
-        refImage: this.newEven.imageRef
-      })
-      this.newEven.titre = ''
-      this.newEven.lieu = ''
-      this.newEven.date = ''
-      this.newEven.recit = ''
-      this.progressBar = 0
-    },
     supp (e) {
-      console.log('ref = ' + e.refImage)
-      storage.ref().child(e.refImage).delete().then(
+      console.log('ref = ' + e.imageRef)
+      storage.ref().child(e.imageRef).delete().then(
         () => {
           console.log('success')
         }).catch(
@@ -262,33 +188,6 @@ export default {
         this.clas.styleImg = ''
         this.clas.containerInfo = 'card-body bg-light'
       }
-    },
-    detectFiles (fileList) {
-      Array.from(Array(fileList.length).keys()).map(x => {
-        this.upload(fileList[x])
-      })
-    },
-    upload (file) {
-      this.uploadTask = storage.ref(this.userId + '/' + file.name).put(file)
-      this.newEven.imageRef = this.userId + '/' + file.name
-    }
-  },
-  watch: {
-    uploadTask: function () {
-      this.uploadTask.on('state_changed', snapshot => {
-        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        this.progressBar = progress
-        console.log('progress is ' + progress + '% done')
-        console.log('progressBar is ' + this.progressBar)
-      },
-      null,
-      () => {
-        this.uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-          this.$emit('url', downloadURL)
-          console.log(downloadURL)
-          this.newEven.imageUrl = downloadURL
-        })
-      })
     }
   }
 }

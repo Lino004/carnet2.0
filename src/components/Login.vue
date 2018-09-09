@@ -1,5 +1,5 @@
 <template>
-    <div class="limiter">
+    <div id="limiter">
         <div class="container-login100">
             <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
                 <form class="login100-form validate-form">
@@ -93,11 +93,12 @@ export default {
 }
 </script>
 
-<style>
-.limiter {
-  background-image: url("../style/images/bg-01.jpg");
+<style scoped>
+#limiter {
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2Fbg-01.jpg?alt=media&token=0b8d4201-a03e-4135-84ec-ccaeaf5073f0");
 }
 </style>
+
 <style src="../style/css/main.css"></style>
 <style src="../style/css/util.css"></style>
 <style src="../style/fonts/font-awesome-4.7.0/css/font-awesome.min.css"></style>

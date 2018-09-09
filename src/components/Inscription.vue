@@ -1,5 +1,5 @@
 <template>
-    <div class="limiter">
+    <div id="limiter">
         <div class="container-login100">
             <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
 
@@ -35,7 +35,7 @@
                             <p>Ou <router-link to="/login">allez à la page de connexion</router-link></p>
                         </div>
 
-                        <div class="alert alert-danger" v-show="etatErr" >
+                        <div class="alert alert-danger" v-show="etatErr" v-for="(erreur, index) in erreurs" :key="index" >
                             <strong>Erreur!</strong> {{erreur}}
                         </div>
 
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import {auth} from '../firebase'
+import {auth, db} from '../firebase'
 
 export default {
   name: 'Inscription',
@@ -65,9 +65,10 @@ export default {
       password: '',
       pseudo: '',
       passwordConfirme: '',
-      erreur: '',
+      erreurs: [],
       etatErr: null,
-      erreurPass: null
+      erreurPass: null,
+      usersRef: db.ref('users')
     }
   },
   computed: {
@@ -79,11 +80,14 @@ export default {
       if (this.password === this.passwordConfirme) {
         return this.passwordConfirme
       }
+      this.erreurs.push('Les mots de passe ne sont pas identiques')
       return ''
     }
   },
   methods: {
     inscrire () {
+
+      this.erreurs = []
 
       auth.createUserWithEmailAndPassword(this.email, this.passwordVerification).then(infoUser => {
 
@@ -92,37 +96,31 @@ export default {
         infoUser.user.updateProfile({
           displayName: this.pseudo
         }).then( () =>{
-          this.$store.dispatch('setUser', infoUser)
-          this.$router.push('/acceuil')
+          this.saveUserToUsersRef(infoUser.user).then( () =>{
+            this.$store.dispatch('setUser', infoUser.user)
+            this.$router.push('/acceuil')
+          })
         })
 
       }).catch(err => {
-        alert(err)
-        switch (err.code) {
-          case 'auth/email-already-in-use':
-            this.etatErr = true
-            this.erreur = 'Un compte existe déjà avec l\'adresse électronique indiquée.'
-            break
-          case 'auth/invalid-email':
-            this.etatErr = true
-            this.erreur = 'Adresse E-mail non valide.'
-            break
-          case 'auth/weak-password':
-            this.etatErr = this.erreurPass = true
-            this.erreur = 'Le mot de passe n\'est pas assez fort ou pas indentique'
-            break
-        }
-
+        this.etatErr = true
+        this.erreurs.push(err.message)
       })
 
+    },
+    saveUserToUsersRef (user) {
+      return this.usersRef.child(user.uid).set({
+        pseudo: user.displayName,
+        email: user.email
+      })
     }
   }
 }
 </script>
 
-<style>
-.limiter {
-  background-image: url("../style/images/bg-01.jpg");
+<style scoped>
+#limiter {
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2Fbg-01.jpg?alt=media&token=0b8d4201-a03e-4135-84ec-ccaeaf5073f0");
 }
 </style>
 <style src="../style/css/main.css"></style>
