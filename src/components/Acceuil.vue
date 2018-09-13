@@ -21,6 +21,7 @@
               <new-event class="modal fade" id="addModal"></new-event>
               <view-event></view-event>
 
+
           </main>
     </div>
 </template>
