@@ -35,8 +35,8 @@
                             <p>Ou <router-link to="/login"><strong class="text-primary">allez à la page de connexion</strong></router-link></p>
                         </div>
 
-                        <div class="alert alert-danger" v-show="etatErr" v-for="(erreur, index) in erreurs" :key="index" >
-                            <strong>Erreur!</strong> {{erreur}}
+                        <div class="alert alert-danger" v-show="etatErr">
+                            <strong>Erreur!</strong> {{erreurs}}
                         </div>
 
                         <div class="container-login100-form-btn">
@@ -65,7 +65,7 @@ export default {
       password: '',
       pseudo: '',
       passwordConfirme: '',
-      erreurs: [],
+      erreurs: '',
       etatErr: null,
       erreurPass: null,
       usersRef: db.ref('users'),
@@ -81,15 +81,13 @@ export default {
       if (this.password === this.passwordConfirme) {
         return this.passwordConfirme
       }
-      this.erreurs.push('Les mots de passe ne sont pas identiques')
+      this.erreurs = 'Les mots de passe ne sont pas identiques'
       return ''
     }
   },
   methods: {
     inscrire () {
-
       this.isLoading = true
-      this.erreurs = []
 
       auth.createUserWithEmailAndPassword(this.email, this.passwordVerification).then(infoUser => {
 
@@ -105,9 +103,9 @@ export default {
       }).catch(err => {
         this.isLoading = false
         this.etatErr = true
-        this.erreurs.push(err.message)
+        this.erreurs = err.message
       })
-
+      
     },
     saveUserToUsersRef (user) {
       return this.usersRef.child(user.uid).set({
