@@ -43,7 +43,7 @@
 
                             <div class="wrap-login100-form-btn">
                                 <div class="login100-form-bgbtn"></div>
-                                <button class="login100-form-btn" @click="inscrire()">S'inscrire</button>
+                                <button class="login100-form-btn" @click="inscrire()"> <i :class="{'fa fa-spinner fa-spin': isLoading}"> </i>S'inscrire</button>
                             </div>
 
                         </div>
@@ -68,7 +68,8 @@ export default {
       erreurs: [],
       etatErr: null,
       erreurPass: null,
-      usersRef: db.ref('users')
+      usersRef: db.ref('users'),
+      isLoading: false
     }
   },
   computed: {
@@ -87,11 +88,10 @@ export default {
   methods: {
     inscrire () {
 
+      this.isLoading = true
       this.erreurs = []
 
       auth.createUserWithEmailAndPassword(this.email, this.passwordVerification).then(infoUser => {
-
-        alert('Inscription réussi')
 
         infoUser.user.updateProfile({
           displayName: this.pseudo
@@ -103,6 +103,7 @@ export default {
         })
 
       }).catch(err => {
+        this.isLoading = false
         this.etatErr = true
         this.erreurs.push(err.message)
       })

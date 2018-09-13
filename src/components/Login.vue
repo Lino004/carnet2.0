@@ -22,7 +22,7 @@
                         <div class="container-login100-form-btn">
                             <div class="wrap-login100-form-btn">
                                 <div class="login100-form-bgbtn"></div>
-                                <button class="login100-form-btn" @click.prevent="verifier">Connecter</button>
+                                <button class="login100-form-btn" @click.prevent="verifier"><i :class="{'fa fa-spinner fa-spin': isLoading}"> </i>Connecter</button>
                             </div>
                         </div>
                     </div>
@@ -55,16 +55,19 @@ export default {
       },
       etatEmail: null,
       etatPass: null,
-      erreur: ''
+      erreur: '',
+      isLoading: false
     }
   },
   methods: {
     verifier () {
+      this.isLoading = true
       auth.signInWithEmailAndPassword(this.user.email, this.user.password).then(
         () => {
           this.$router.push('/acceuil')
         },
         (err) => {
+          this.isLoading = false
           switch (err.code) {
             case 'auth/invalid-email':
               this.etatEmail = true
