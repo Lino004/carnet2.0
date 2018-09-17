@@ -1,44 +1,57 @@
 <template>
-    <div class="album py-5 bg-light">
-        <div class="container">
-            <div class="row">
-                <div class="row">
+    <div class="container">
 
-                    <div :class="clas.container" v-for="event in events" :key="event.id">
+        <!-- Affichage de tout les événements -->
+        <div class="columns is-multiline" v-show="!view">
+            <div class="column is-one-third-desktop is-half-tablet" v-for="event in events" :key="event.id">
+                <div class="card">
 
-                        <div :class="clas.container2">
-
-                            <div :class="clas.containerImg">
-
-                                <img :class="clas.Img" :style="clas.styleImg" :src="event.imageUrl" alt="Card image cap">
-                                <div class="card-img-overlay d-flex align-items-start">
-                                    <h5 class="w-100 display-10 font-weight-bold p-3 bg-dark text-white">{{ event.titre }}</h5>
-                                </div>
-
-                            </div>
-
-                            <div :class="clas.containerInfo">
-
-                                <div v-show="view">
-                                    <h2 class="text-info">Commentaire</h2>
-                                    <p class="card-text"> {{event.recit}} </p>
-                                </div>
-
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-info" @click.prevent="voir(event)"> {{textBntVoir}} </button>
-                                        <button type="button" class="btn btn-sm btn-outline-info">Editter</button>
-                                        <button type="button" class="btn btn-sm btn-outline-info" @click.prevent="supp(event)">Suprimer</button>
-                                    </div>
-                                    <small class="text-muted">Le {{event.date}}</small>
-                                </div>
-
-                            </div>
-
+                    <div class="card-image is-flex is-horizontal-center">
+                        <figure>
+                            <img class="img-view1" :src="event.imageUrl" alt="">
+                        </figure>
+                        <div class="card-content is-overlay is-clipped">
+                            <span class="tag is-info">
+                                {{event.titre}} 
+                            </span>       
                         </div>
-
                     </div>
 
+                    <footer class="card-footer">
+                        <a class="card-footer-item button is-info is-outlined" @click="voirPlus(event)">Voir +</a>
+                        <a class="card-footer-item button is-info is-outlined" @click="supp(event)">Supprimer</a>
+                    </footer>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Affichage de l'événement choisi -->
+        <div class="box" v-for="event in events" :key="event.id" v-show="view">
+            <div class="tile is-ancestor">
+                <div class="tile is-parent">
+                    <div class="tile is-child">
+                        <img :src="event.imageUrl" alt="">
+                    </div>
+                </div>
+                <div class="tile is-4 is-vertical is-parent">
+                    <div class="tile is-parent is-vertical box">
+                        <div class="tile is-child">
+                            <p class="title">{{event.titre}}</p>
+                            <p> {{event.recit}} </p>
+                        </div>
+                        <div class="tile is-child">
+                            <span class="tag is-white">Le {{event.date}} à {{event.lieu}}</span>
+                        </div>
+                    </div>
+                    <div class="tile is-parent">
+                        <div class="tile is-child">
+                            <a class="card-footer-item button is-info is-outlined" @click="voirMoins()">Voir -</a>
+                        </div>
+                        <div class="tile is-child">
+                            <a class="card-footer-item button is-info is-outlined" @click="supp(event)">Supprimer</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,17 +67,8 @@ export default {
         return {
             userId: auth.currentUser.uid, // Récupère Id de l'utilisateur
             events: [], // Tableau receptionnant les informations sur les évenements
-            view: false,
-            tempEvents: [],
-            clas: {
-                container: 'col-md-4',
-                container2: 'card mb-4 box-shadow shadow-lg border-info',
-                containerImg: '',
-                Img: 'card-img-top',
-                styleImg: 'width: 100%; height: 100%;',
-                containerInfo: 'card-body bg-light'
-            },
-            textBntVoir: 'Voir +'
+            view: false, // Variable d'état des diffirents mode d'affichage
+            tempEvents: [] // Variable temporaire
         }
     },
     computed: {
@@ -101,27 +105,13 @@ export default {
             })
             location.reload()
         },
-        voir (e) {
+        voirPlus (e) {
             this.view = !this.view
-            if (this.view) {
-                this.textBntVoir = 'Voir -'
-                this.events = this.events.filter(ev => ev.recit === e.recit)
-                this.clas.container = 'row shadow-lg'
-                this.clas.container2 = 'row col-md-12'
-                this.clas.containerImg = 'col-md-6'
-                this.clas.Img = 'mb-4 mt-4'
-                this.clas.styleImg = 'width: 100%'
-                this.clas.containerInfo = 'col-md-6 pt-3'
-            } else {
-                this.textBntVoir = 'Voir +'
-                this.events = this.tempEvents
-                this.clas.container = 'col-md-4'
-                this.clas.container2 = 'card mb-4 box-shadow shadow-lg border-info'
-                this.clas.containerImg = ''
-                this.clas.Img = 'card-img-top'
-                this.clas.styleImg = 'width: 100%; height: 100%;'
-                this.clas.containerInfo = 'card-body bg-light'
-            }
+            this.events = this.events.filter(ev => ev.id === e.id)
+        },
+        voirMoins () {
+            this.view = !this.view
+            this.events = this.tempEvents
         }
     },
     mounted () {
@@ -135,6 +125,11 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.img-view1 {
+	height:300px;
+}
+.is-horizontal-center {
+    justify-content: center;
+}
 </style>
