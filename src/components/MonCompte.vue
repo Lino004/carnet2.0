@@ -15,14 +15,24 @@
             <form action="">
                 <div class="modal-card" style="width: auto">
                     <header class="modal-card-head">
-                        <p class="modal-card-title">Login</p>
+                       
                     </header>
                     <section class="modal-card-body">
+                     <p class="modal-card-title">Login</p>
+                     <b-field label="Pseudo">
+                            <b-input
+                                type="text"
+                                :value="text"
+                                placeholder="{{pseudo}}"
+                                required>
+                            </b-input>
+                        </b-field>
+
                         <b-field label="Email">
                             <b-input
                                 type="email"
                                 :value="email"
-                                placeholder="Your email"
+                                placeholder="{{email}}"
                                 required>
                             </b-input>
                         </b-field>
@@ -32,16 +42,16 @@
                                 type="password"
                                 :value="password"
                                 password-reveal
-                                placeholder="Your password"
+                                placeholder="{{password}}"
                                 required>
                             </b-input>
                         </b-field>
 
-                        <b-checkbox>Remember me</b-checkbox>
+                        
                     </section>
                     <footer class="modal-card-foot">
-                        <button class="button" type="button" @click="$parent.close()">Close</button>
-                        <button class="button is-primary">Login</button>
+                        <button class="button" type="button" @click="$parent.close()">Valider</button>
+                        <button class="button is-primary">Modifier</button>
                     </footer>
                 </div>
             </form>
