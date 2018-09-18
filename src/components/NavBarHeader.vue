@@ -25,7 +25,7 @@
                         <h4 class="text-white"></h4>
                         <ul class="list-unstyled">
                             <li><a href="#" class="text-white"><i class="fa fa-plane"> </i> Mes Destinations</a></li>
-                            <li><a href="#" class="text-white"><i class="fa fa-user-circle"> </i> Mon compte</a></li>
+                            <li><a href="#" class="text-white" @click="viewAddModalCompte"><i class="fa fa-user-circle"> </i> Mon compte</a></li>
                             <li><a href="#" class="text-white" @click.prevent="deconnecter()"><i class="fa fa-sign-out"> </i> Deconnection</a></li>
                         </ul>
                     </div>
@@ -74,6 +74,9 @@ export default {
     methods: {
         viewAddModal () {
             $("#addModal").modal('show')
+        },
+         viewAddModalCompte () {
+            $("#addModalCompte").modal('show')
         },
         deconnecter () {
             auth.signOut().then(() => {
