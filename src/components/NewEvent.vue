@@ -136,7 +136,7 @@ export default {
             })
         },
         upload (file) {
-            console.log('fileInfo = ' + file)
+            console.log('fileInfo = ' + file.lastModifiedDate)
             this.isLoading = true
             this.uploadTask = storage.ref(this.userId + '/' + file.name).put(file)
             this.newEven.imageRef = this.userId + '/' + file.name
