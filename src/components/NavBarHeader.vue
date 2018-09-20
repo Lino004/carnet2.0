@@ -38,11 +38,16 @@
         <div class="container d-flex justify-content-between">
             
             <!--Bouton d'ajout d'un evenement-->
-            <a href="#" class="navbar-brand d-flex align-items-center" @click="viewAddModal">
+            <a href="#" class="navbar-brand d-flex align-items-center" 
+                @click="fenetreModalActive = true">
                 <i class="fa fa-plus"></i>&nbsp;
-                <span>Add</span>
+                <span>Ajouter</span>
             </a>
             
+            <b-modal :active.sync="fenetreModalActive" has-modal-card>
+                <new-event></new-event>
+            </b-modal>
+
             <!--Bouton de navigation-->
             <div class="d-flex align-items-center">
                 <span class="navbar-brand"> {{currentUser.displayName}} </span>
@@ -60,21 +65,23 @@
 <script>
 import { auth } from '../firebase'
 import { mapGetters } from 'vuex'
+import NewEvent from './NewEvent'
 
 export default {
     name: 'nav-bar-header',
+    components: {
+        NewEvent
+    },
     data () {
         return {
-            show: false
+            show: false,
+            fenetreModalActive: false,
         }
     },
     computed: {
         ...mapGetters(['currentUser'])
     },
     methods: {
-        viewAddModal () {
-            $("#addModal").modal('show')
-        },
         deconnecter () {
             auth.signOut().then(() => {
                 this.$store.dispatch('setUser', null)
