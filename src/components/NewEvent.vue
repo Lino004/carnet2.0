@@ -87,7 +87,8 @@ export default {
                 date: '',
                 recit: '',
                 imageUrl: null,
-                imageRef: null
+                imageRef: null,
+                selectionner: false
             },
             
             uploadTask: null,

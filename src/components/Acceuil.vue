@@ -1,7 +1,7 @@
 <template>
     <div>
           <nav-bar-header></nav-bar-header>
-          <main role="main">
+          <main id="main" role="main">
             <view-event></view-event>
           </main>
     </div>
@@ -16,6 +16,11 @@ export default {
   components: {
     ViewEvent,
     NavBarHeader
+  },
+  data () {
+    return {
+      
+    }
   }
 }
 </script>

@@ -38,7 +38,8 @@
         <div class="container d-flex justify-content-between">
             
             <!--Bouton d'ajout d'un evenement-->
-            <a href="#" class="navbar-brand d-flex align-items-center" @click="fenetreModalActive = true">
+            <a href="#" class="navbar-brand d-flex align-items-center" 
+                @click="fenetreModalActive = true">
                 <i class="fa fa-plus"></i>&nbsp;
                 <span>Ajouter</span>
             </a>
@@ -74,7 +75,7 @@ export default {
     data () {
         return {
             show: false,
-            fenetreModalActive: false
+            fenetreModalActive: false,
         }
     },
     computed: {
