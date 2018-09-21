@@ -5,15 +5,15 @@ VIEW
         <!-- Option de selection d'un événement -->
         <div class="level" v-show="etatOptionSelect">
             <div class="level-left">
+                <a class="button is-info text-white" v-show="etatSelectCheckbox" @click="supps()">Suprimer</a>
+            </div>
+            <div class="level-right">
                 <a class="button is-info is-outlined is-rounded" 
                     @click="selectionner()"
-                    v-show="!etatSelectCheckbox">Selectionner</a>
+                    v-show="!etatSelectCheckbox"><i class="fa fa-trash"></i></a>
                 <a class="button is-info is-outlined is-rounded" 
                     @click="annulerSelection()" 
                     v-show="etatSelectCheckbox">Annuler</a>
-            </div>
-            <div class="level-right">
-                <a class="button is-info text-white" v-show="etatSelectCheckbox" @click="supps()">Supprimer</a>
             </div>
         </div>
 
