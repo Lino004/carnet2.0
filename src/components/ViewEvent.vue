@@ -1,44 +1,78 @@
+VIEW
 <template>
-    <div class="album py-5 bg-light">
-        <div class="container">
-            <div class="row">
-                <div class="row">
+    <div class="container" id="main">
 
-                    <div :class="clas.container" v-for="event in events" :key="event.id">
+        <!-- Option de selection d'un événement -->
+        <div class="level" v-show="etatOptionSelect">
+            <div class="level-left">
+                <a class="button is-info is-outlined is-rounded" 
+                    @click="selectionner()"
+                    v-show="!etatSelectCheckbox">Selectionner</a>
+                <a class="button is-info is-outlined is-rounded" 
+                    @click="annulerSelection()" 
+                    v-show="etatSelectCheckbox">Annuler</a>
+            </div>
+            <div class="level-right">
+                <a class="button is-info text-white" v-show="etatSelectCheckbox" @click="supps()">Supprimer</a>
+            </div>
+        </div>
 
-                        <div :class="clas.container2">
-
-                            <div :class="clas.containerImg">
-
-                                <img :class="clas.Img" :style="clas.styleImg" :src="event.imageUrl" alt="Card image cap">
-                                <div class="card-img-overlay d-flex align-items-start">
-                                    <h5 class="w-100 display-10 font-weight-bold p-3 bg-dark text-white">{{ event.titre }}</h5>
+        <!-- Affichage de tout les événements -->
+        <div class="columns is-multiline" v-show="!view">
+            <div class="column is-one-third-desktop is-half-tablet" 
+                v-for="event in events" :key="event.id">
+                <div class="card">
+                    <div class="card-image is-flex is-horizontal-center">
+                        <figure>
+                            <img class="img-view1" :src="event.imageUrl" alt="">
+                        </figure>
+                        <div class="card-content is-overlay is-clipped">
+                            <div class="level">
+                                <div class="level-left">
+                                    <span class="tag is-info">
+                                        {{event.titre}} 
+                                    </span>
                                 </div>
-
+                                <div class="level-right" v-show="etatSelectCheckbox" >
+                                    <b-checkbox v-model="event.selectionner"
+                                    type="is-info">
+                                    </b-checkbox>
+                                </div>
                             </div>
-
-                            <div :class="clas.containerInfo">
-
-                                <div v-show="view">
-                                    <h2 class="text-info">Commentaire</h2>
-                                    <p class="card-text"> {{event.recit}} </p>
-                                </div>
-
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-info" @click.prevent="voir(event)"> {{textBntVoir}} </button>
-                                        <button type="button" class="btn btn-sm btn-outline-info">Editter</button>
-                                        <button type="button" class="btn btn-sm btn-outline-info" @click.prevent="supp(event)">Suprimer</button>
-                                    </div>
-                                    <small class="text-muted">Le {{event.date}}</small>
-                                </div>
-
-                            </div>
-
                         </div>
-
                     </div>
+                    <footer class="card-footer">
+                        <a class="card-footer-item button is-info is-outlined" 
+                            @click="voirPlus(event)">Voir +</a>
+                    </footer>
+                </div>
+            </div>
+        </div>
 
+        <!-- Affichage de l'événement choisi -->
+        <div class="box" v-for="event in events" :key="event.id" v-show="view">
+            <div class="tile is-ancestor">
+                <div class="tile is-parent">
+                    <div class="tile is-child">
+                        <img :src="event.imageUrl" alt="">
+                    </div>
+                </div>
+                <div class="tile is-4 is-vertical is-parent">
+                    <div class="tile is-parent is-vertical box">
+                        <div class="tile is-child">
+                            <p class="title">{{event.titre}}</p>
+                            <p> {{event.recit}} </p>
+                        </div>
+                        <div class="tile is-child">
+                            <span class="tag is-white">Le {{event.date}} à {{event.lieu}}</span>
+                        </div>
+                    </div>
+                    <div class="tile is-parent">
+                        <div class="tile is-child">
+                            <a class="card-footer-item button is-info is-outlined" 
+                                @click="voirMoins()">Voir -</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,17 +88,10 @@ export default {
         return {
             userId: auth.currentUser.uid, // Récupère Id de l'utilisateur
             events: [], // Tableau receptionnant les informations sur les évenements
-            view: false,
-            tempEvents: [],
-            clas: {
-                container: 'col-md-4',
-                container2: 'card mb-4 box-shadow shadow-lg border-info',
-                containerImg: '',
-                Img: 'card-img-top',
-                styleImg: 'width: 100%; height: 100%;',
-                containerInfo: 'card-body bg-light'
-            },
-            textBntVoir: 'Voir +'
+            view: false, // Variable d'état des diffirents mode d'affichage
+            tempEvents: [], // Variable temporaire
+            etatSelectCheckbox: false, // Variable d'état des checkbox
+            etatOptionSelect: false // Variable d'état de partie selection
         }
     },
     computed: {
@@ -73,16 +100,21 @@ export default {
         }
     },
     methods: {
-        listenerEventAdd () {
-            this.eventsDbRef.on('child_added', snap => {
-                this.events.push({...snap.val(), id: snap.key})
+        selectionner () {
+            this.etatSelectCheckbox = true
+        },
+        annulerSelection () {
+            this.etatSelectCheckbox = false
+            this.events.forEach((ev) => {
+                ev.selectionner = false
             })
         },
-        listenerEventSupp () {
-            this.eventsDbRef.on('child_removed', snapshot => {
-                const eventSupp = this.events.find(even => even.id === snapshot.key)
-                const index = this.events.indexOf(eventSupp)
-                this.events.slice(index, 1)
+        listenerEventAdd () {
+            this.eventsDbRef.on('child_added', snap => {
+                if ( snap.val !== null) {
+                    this.etatOptionSelect = true
+                }
+                this.events.push({...snap.val(), id: snap.key})
             })
         },
         detachListenerEvent () {
@@ -99,34 +131,51 @@ export default {
             }).catch( (error) => {
                 console.log('erreur data :' + error.message)
             })
-            location.reload()
         },
-        voir (e) {
+        miseAJourEvent () {
+            this.events.forEach((ev) => {
+                this.eventsDbRef.child(ev.id).update({...ev})
+            })
+        },
+        supps () {
+            this.$dialog.confirm({
+                title: 'Confirmation',
+                message: 'Êtes-vous sûr de vouloir continuer ?',
+                cancelText: 'Non',
+                confimText: 'Oui',
+                type: 'is-danger',
+                hasIcon: true,
+                onConfirm: () => {
+                    this.miseAJourEvent()
+                    let e = this.events.filter(ev => ev.selectionner === true)
+                    e.forEach((ev) => {
+                        this.supp(ev)
+                    })
+                    location.reload()
+                }, 
+                onCancel: () => {
+                    this.events.forEach((ev) => {
+                        ev.selectionner = false
+                    })
+                    this.$toast.open({
+                        message: 'Suppression annulée'
+                    })
+                }
+            })
+        },
+        voirPlus (e) {
+            this.etatOptionSelect = false
             this.view = !this.view
-            if (this.view) {
-                this.textBntVoir = 'Voir -'
-                this.events = this.events.filter(ev => ev.recit === e.recit)
-                this.clas.container = 'row shadow-lg'
-                this.clas.container2 = 'row col-md-12'
-                this.clas.containerImg = 'col-md-6'
-                this.clas.Img = 'mb-4 mt-4'
-                this.clas.styleImg = 'width: 100%'
-                this.clas.containerInfo = 'col-md-6 pt-3'
-            } else {
-                this.textBntVoir = 'Voir +'
-                this.events = this.tempEvents
-                this.clas.container = 'col-md-4'
-                this.clas.container2 = 'card mb-4 box-shadow shadow-lg border-info'
-                this.clas.containerImg = ''
-                this.clas.Img = 'card-img-top'
-                this.clas.styleImg = 'width: 100%; height: 100%;'
-                this.clas.containerInfo = 'card-body bg-light'
-            }
+            this.events = this.events.filter(ev => ev.id === e.id)
+        },
+        voirMoins () {
+            this.etatOptionSelect = true
+            this.view = !this.view
+            this.events = this.tempEvents
         }
     },
     mounted () {
         this.listenerEventAdd()
-        this.listenerEventSupp()
         this.tempEvents = this.events
     },
     beforeDestroy () {
@@ -135,6 +184,14 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.img-view1 {
+    height:300px;
+}
+.is-horizontal-center {
+    justify-content: center;
+}
+#main {
+    margin-top: 20px;
+}
 </style>

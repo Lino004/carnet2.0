@@ -1,64 +1,72 @@
 <template>
-    <div id="addModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
+    <div class="modal-card" style="width: auto">
 
-                <div class="modal-header">
-                    <h4 class="modal-title">Nouvelle Evenement</h4>
-                    <button type="button" class="close" @click="closeAddModal">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+        <header class="modal-card-head">
+            <p class="modal-card-title">Nouvel Événement</p>
+        </header>
 
-                <div class="modal-body">
-                    <div>
-                        <form>
+        <section class="modal-card-body">
 
-                            <div class="form-group">
-                                <label>Selectioner Image</label>
-                                <input type="file" class="form-control" multiple accept="image/*" @change="detectFiles($event.target.files)">
-                                <div class="progress">
-                                    <div class="progress-bar bg-info" role="progressbar" :style="'width: ' + progressBar + '%'" :aria-valuenow="progressBar" aria-valuemin="0" :aria-valuemax="progressBar"></div>
-                                </div>
-                            </div>
+            <b-field class="file">
+                <b-upload v-model="files">
+                    <a class="button is-primary">
+                        <b-icon icon="upload"></b-icon>
+                        <span>Selectioner Image</span>
+                    </a>
+                </b-upload>
+                <span class="file-name"
+                    v-if="files && files.length">
+                    {{ files[0].name }}
+                </span>
+            </b-field>
 
-                            <div class="form-group">
-                                <label>Titre</label>
-                                <input type="text" class="form-control" placeholder="Titre" v-model="newEven.titre">
-                            </div>
+            <b-field label="Name">
+                <b-input v-model="newEven.titre"></b-input>
+            </b-field>
 
-                            <div class="form-group">
-                                <label>Lieu</label>
-                                <input type="text" class="form-control" placeholder="Lieu" v-model="newEven.lieu">
-                            </div>
+            <b-field label="Lieu">
+                <b-input v-model="newEven.lieu"></b-input>
+            </b-field>
 
-                            <div class="form-group">
-                                <label>Date</label>
-                                <input type="date" class="form-control" placeholder="Date" v-model="newEven.date">
-                            </div>
+            <b-field label="Selectionnez une date">
+                <b-input type="date" v-model="newEven.date"
+                    placeholder="Cliqueez pour selectionner..."
+                    icon="calendar-today"
+                    :readonly="false">
+                </b-input>
+            </b-field>
 
-                            <div class="form-group">
-                                <label>Commentaire</label>
-                                <textarea class="form-control" rows="3" v-model="newEven.recit"></textarea>
-                            </div>
+            <b-field label="Message">
+                <b-input type="textarea" 
+                    v-model="newEven.recit"></b-input>
+            </b-field>
 
-                            <div class="alert alert-warning" v-show="!champsRemplis" >
-                                <strong>Attention!</strong> Il est important de remplir tout les champs avant de pouvoir souvegarder l'évenement
-                            </div>
-                        
-                            <div class="">
-                                <button type="button" class="form-control btn btn-light" @click="closeAddModal">Annuler</button>
-                            </div>
+            <b-message :title="titreMessageAlert" 
+                :type="typeMessageAlert" 
+                :closable="false"
+                has-icon>
+                {{messageAlert}}
+            </b-message>
 
-                            <div class="">
-                                <button type="button" class="form-control btn btn-info" @click.prevent="add" v-show="champsRemplis">Ajouter</button>
-                            </div>
+        </section>
 
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <footer class="modal-card-foot">
+            <button class="button" 
+                type="button" 
+                @click="closeAddModal">Annuler
+            </button>
+            <button class="button is-primary" 
+                type="button" 
+                disabled 
+                v-show="!champsRemplis">Ajouter
+            </button>
+            <button class="button is-primary"
+                :class="{'is-loading': isLoading}"
+                type="button" 
+                @click.prevent="upload(files[0])" 
+                v-show="champsRemplis">Ajouter
+            </button>
+        </footer>
     </div>
 </template>
 
@@ -70,69 +78,88 @@ export default {
     data () {
         return  {
             userId: auth.currentUser.uid,
-            newEven: { // Objet récupérent les informations de saisie
+            files: [],
+
+            // Objet récupérent les informations de saisie
+            newEven: {
                 titre: '',
                 lieu: '',
-                date: null,
+                date: '',
                 recit: '',
                 imageUrl: null,
-                imageRef: null
+                imageRef: null,
+                selectionner: false
             },
+            
             uploadTask: null,
-            progressBar: 0
+            isLoading: false,
+            
+            // Variable alert
+            titreMessageAlert: 'Attention',
+            typeMessageAlert: 'is-warning',
+            messageAlert: 'Il est important de remplir tout les champs avant de pouvoir souvegarder l\'évenement'
         }
     },
     computed: {
         champsRemplis () {
-            if (this.newEven.titre !== '' && this.newEven.lieu !== '' && this.newEven.date !== null && this.newEven.recit !== '' && this.progressBar === 100 && this.newEven.imageUrl !== '') {
+            if (this.newEven.titre !== '' && this.newEven.lieu !== '' && this.newEven.date !== null && this.newEven.recit !== '' && this.files[0].name !== '') {
+                this.titreMessageAlert = 'Succès'
+                this.typeMessageAlert = 'is-success'
+                this.messageAlert = 'Tout les champs sont remplis. Vous pouvez ajouter l\'événement'
                 return true
             }
             return false
         },
         eventsDbRef () {
             return db.ref('events/' + this.userId)
+        },
+        isUpload () {
+            if (this.name.imageUrl !== '') {
+                return true
+            }
+            return false
         }
     },
     methods: {
         add () {
             this.eventsDbRef.push().set({...this.newEven}).then( () =>{
+                this.files = []
+                this.newEven.titre = ''
+                this.newEven.lieu = ''
+                this.newEven.date = ''
+                this.newEven.recit = ''
+                this.isLoading = false
                 this.closeAddModal()
             }).catch( erreur =>{
+                this.isLoading = false
                 alert(erreur.message)
-            })
-            this.newEven.titre = ''
-            this.newEven.lieu = ''
-            this.newEven.date = ''
-            this.newEven.recit = ''
-            this.progressBar = 0
-        },
-        detectFiles (fileList) {
-            Array.from(Array(fileList.length).keys()).map(x => {
-                this.upload(fileList[x])
             })
         },
         upload (file) {
+            console.log('fileInfo = ' + file)
+            this.isLoading = true
             this.uploadTask = storage.ref(this.userId + '/' + file.name).put(file)
             this.newEven.imageRef = this.userId + '/' + file.name
         },
         closeAddModal () {
-            $("#addModal").modal('hide')
+            this.$parent.close()
         }
     },
     watch: {
         uploadTask: function () {
             this.uploadTask.on('state_changed', snapshot => {
                 var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                this.progressBar = progress
                 console.log('progress is ' + progress + '% done')
-                console.log('progressBar is ' + this.progressBar)
             },
             null,
             () => {
                 this.uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-                this.$emit('url', downloadURL)
-                console.log(downloadURL)
-                this.newEven.imageUrl = downloadURL
+                    this.$emit('url', downloadURL)
+                    console.log(downloadURL)
+                    this.newEven.imageUrl = downloadURL
+                    if (this.newEven.imageUrl === downloadURL) {
+                        this.add()
+                    }
                 })
             })
         }
@@ -143,3 +170,4 @@ export default {
 <style>
 
 </style>
+
