@@ -15,18 +15,24 @@
                     <div class="col-sm-2 offset-md-1 py-4">
                         <h4 class="text-white"></h4>
                         <ul class="list-unstyled">
-                            <li><a href="#" class="text-white"><i class="fa fa-home"></i>&emsp;Acceuil</a></li>
-                            <li><a href="#" class="text-white"><i class="fa fa-image"></i>&emsp;Mes Albums</a></li>
-                            <li><a href="#" class="text-white"><i class="fa fa-gratipay"></i>&emsp;Mes Favoris</a></li>
+                            <li><a href="#" class="text-white">
+                                <i class="fa fa-home"></i>&emsp;Acceuil</a></li>
+                            <li><a href="#" class="text-white">
+                                <i class="fa fa-image"></i>&emsp;Mes Albums</a></li>
+                            <li><a href="#" class="text-white">
+                                <i class="fa fa-gratipay"></i>&emsp;Mes Favoris</a></li>
                         </ul>
                     </div>
 
                     <div class="col-sm-2 offset-md-1 py-4">
                         <h4 class="text-white"></h4>
                         <ul class="list-unstyled">
-                            <li><a href="#" class="text-white"><i class="fa fa-plane"> </i> Mes Destinations</a></li>
-                            <li><a href="#" class="text-white"><i class="fa fa-user-circle"> </i> Mon compte</a></li>
-                            <li><a href="#" class="text-white" @click.prevent="deconnecter()"><i class="fa fa-sign-out"> </i> Deconnection</a></li>
+                            <li><a href="#" class="text-white">
+                                <i class="fa fa-plane"></i> Mes Destinations</a></li>
+                            <li><a href="#" class="text-white">
+                                <i class="fa fa-user-circle"></i> Mon compte</a></li>
+                            <li><a href="#" class="text-white" @click.prevent="deconnecter()">
+                                <i class="fa fa-sign-out"></i> Deconnection</a></li>
                         </ul>
                     </div>
 

@@ -1,18 +1,19 @@
 <template>
     <div class="container" id="main">
-
+        
         <!-- Option de selection d'un événement -->
         <div class="level" v-show="etatOptionSelect">
             <div class="level-left">
                 <a class="button is-info is-outlined is-rounded" 
-                    @click="selectionner()"
-                    v-show="!etatSelectCheckbox">Selectionner</a>
-                <a class="button is-info is-outlined is-rounded" 
                     @click="annulerSelection()" 
-                    v-show="etatSelectCheckbox">Annuler</a>
+                    v-show="etatSelectCheckbox">Annuler
+                </a>
             </div>
             <div class="level-right">
-                <a class="button is-info text-white" v-show="etatSelectCheckbox" @click="supps()">Supprimer</a>
+                <a class="button is-info text-white" 
+                    v-show="etatSelectCheckbox" 
+                    @click="supprimerPlusieursEvents()">Supprimer
+                </a>
             </div>
         </div>
 
@@ -26,23 +27,47 @@
                             <img class="img-view1" :src="event.imageUrl" alt="">
                         </figure>
                         <div class="card-content is-overlay is-clipped">
-                            <div class="level">
-                                <div class="level-left">
+                            <div class="level is-flex-mobile">
+                                <div class="level-left" v-show="!etatSelectCheckbox">
+                                    <b-dropdown>
+                                        <button class="button" slot="trigger">
+                                            <b-icon class="has-text-info" 
+                                                icon="dots-vertical-circle">
+                                            </b-icon>
+                                        </button>
+                                        <b-dropdown-item class="has-text-info"
+                                            @click="supprimerUnEvent(event)">
+                                            <b-icon icon="delete" size="is-small"></b-icon> 
+                                            Supprimer
+                                        </b-dropdown-item>
+                                        <b-dropdown-item class="has-text-info"
+                                            @click="selectionner()">
+                                            <b-icon icon="select-inverse" size="is-small"></b-icon> 
+                                            Selectionner
+                                        </b-dropdown-item>
+                                        <b-dropdown-item class="has-text-info">
+                                            <b-icon icon="heart" size="is-small"></b-icon> Favori
+                                        </b-dropdown-item>
+                                    </b-dropdown>
+                                </div>
+                                <div class="level-left" v-show="etatSelectCheckbox" >
+                                    <b-checkbox v-model="event.selectionner"
+                                        type="is-info">
+                                    </b-checkbox>
+                                </div>
+                                <div class="level-rigth">
                                     <span class="tag is-info">
                                         {{event.titre}} 
                                     </span>
-                                </div>
-                                <div class="level-right" v-show="etatSelectCheckbox" >
-                                    <b-checkbox v-model="event.selectionner"
-                                    type="is-info">
-                                    </b-checkbox>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <footer class="card-footer">
                         <a class="card-footer-item button is-info is-outlined" 
-                            @click="voirPlus(event)">Voir +</a>
+                            @click="voirPlus(event)">Voir &nbsp;
+                            <b-icon icon="plus"></b-icon>
+                        </a>
                     </footer>
                 </div>
             </div>
@@ -69,7 +94,9 @@
                     <div class="tile is-parent">
                         <div class="tile is-child">
                             <a class="card-footer-item button is-info is-outlined" 
-                                @click="voirMoins()">Voir -</a>
+                                @click="voirMoins()">Voir &nbsp;
+                                <b-icon icon="window-minimize"></b-icon>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -90,7 +117,7 @@ export default {
             view: false, // Variable d'état des diffirents mode d'affichage
             tempEvents: [], // Variable temporaire
             etatSelectCheckbox: false, // Variable d'état des checkbox
-            etatOptionSelect: false // Variable d'état de partie selection
+            etatOptionSelect: true // Variable d'état de partie selection
         }
     },
     computed: {
@@ -110,16 +137,13 @@ export default {
         },
         listenerEventAdd () {
             this.eventsDbRef.on('child_added', snap => {
-                if ( snap.val !== null) {
-                    this.etatOptionSelect = true
-                }
                 this.events.push({...snap.val(), id: snap.key})
             })
         },
         detachListenerEvent () {
             this.eventsDbRef.off()
         },
-        supp (e) {
+        supprimer (e) {
             storage.ref().child(e.imageRef).delete().then(() => {
                 console.log('supp image success')
             }).catch( (error) => {
@@ -136,7 +160,7 @@ export default {
                 this.eventsDbRef.child(ev.id).update({...ev})
             })
         },
-        supps () {
+        supprimerPlusieursEvents () {
             this.$dialog.confirm({
                 title: 'Confirmation',
                 message: 'Êtes-vous sûr de vouloir continuer ?',
@@ -148,7 +172,34 @@ export default {
                     this.miseAJourEvent()
                     let e = this.events.filter(ev => ev.selectionner === true)
                     e.forEach((ev) => {
-                        this.supp(ev)
+                        this.supprimer(ev)
+                    })
+                    location.reload()
+                }, 
+                onCancel: () => {
+                    this.events.forEach((ev) => {
+                        ev.selectionner = false
+                    })
+                    this.$toast.open({
+                        message: 'Suppression annulée'
+                    })
+                }
+            })
+        },
+        supprimerUnEvent (event) {
+            this.$dialog.confirm({
+                title: 'Confirmation',
+                message: 'Êtes-vous sûr de vouloir continuer ?',
+                cancelText: 'Non',
+                confimText: 'Oui',
+                type: 'is-danger',
+                hasIcon: true,
+                onConfirm: () => {
+                    event.selectionner = true
+                    this.miseAJourEvent()
+                    let e = this.events.filter(ev => ev.selectionner === true)
+                    e.forEach((ev) => {
+                        this.supprimer(ev)
                     })
                     location.reload()
                 }, 
