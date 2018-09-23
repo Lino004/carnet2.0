@@ -1,3 +1,4 @@
+VIEW
 <template>
     <div class="container" id="main">
         
@@ -10,9 +11,9 @@
                 </a>
             </div>
             <div class="level-right">
-                <a class="button is-info text-white" 
+                <a class="button is-info is-outlined is-rounded" 
                     v-show="etatSelectCheckbox" 
-                    @click="supprimerPlusieursEvents()">Supprimer
+                    @click="supprimerPlusieursEvents()"><b-icon icon="delete"></b-icon>
                 </a>
             </div>
         </div>
@@ -137,6 +138,9 @@ export default {
         },
         listenerEventAdd () {
             this.eventsDbRef.on('child_added', snap => {
+                if ( snap.val !== null) {
+                    this.etatOptionSelect = true
+                }
                 this.events.push({...snap.val(), id: snap.key})
             })
         },
