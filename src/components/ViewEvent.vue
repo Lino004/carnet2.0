@@ -3,20 +3,21 @@ VIEW
     <div class="container" id="main">
 
         <!-- Option de selection d'un événement -->
-        <div class="level" v-show="etatOptionSelect">
+        <div class="level" id='trash' v-show="etatOptionSelect">
             <div class="level-left">
-                <a class="button is-info text-white" v-show="etatSelectCheckbox" @click="supps()">Suprimer</a>
+                <a  v-show="etatSelectCheckbox" @click="supps()"><b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon></a>
             </div>
-            <div class="level-right">
-                <a class="button is-info is-outlined is-rounded" 
-                    @click="selectionner()"
-                    v-show="!etatSelectCheckbox"><i class="fa fa-trash"></i></a>
-                <a class="button is-info is-outlined is-rounded" 
-                    @click="annulerSelection()" 
-                    v-show="etatSelectCheckbox">Annuler</a>
+            
+            <div class="level-right" >
+                <b-tooltip label="Supprimer" type="is-dark">
+                <a  @click="selectionner()"
+                    v-show="!etatSelectCheckbox"><b-icon icon="delete" type="is-info" size="is-medium"></b-icon></a>
+                    </b-tooltip>
+                <a  @click="annulerSelection()" 
+                    v-show="etatSelectCheckbox"><b-icon icon="close-circle" type="is-info" size="is-medium"></b-icon></a>
             </div>
+            
         </div>
-
         <!-- Affichage de tout les événements -->
         <div class="columns is-multiline" v-show="!view">
             <div class="column is-one-third-desktop is-half-tablet" 
@@ -193,5 +194,11 @@ export default {
 }
 #main {
     margin-top: 20px;
+    
+}
+#trash{
+    position: fixed;
+   
+   left:10px;
 }
 </style>
