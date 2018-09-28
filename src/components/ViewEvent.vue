@@ -3,21 +3,20 @@ VIEW
     <div class="container" id="main">
         
         <!-- Option de selection d'un événement -->
-        <div class="level" v-show="etatOptionSelect">
+        <div class="level" id='trash' v-show="etatOptionSelect">
             <div class="level-left">
-                <a class="button is-info is-outlined is-rounded" 
-                    @click="annulerSelection()" 
-                    v-show="etatSelectCheckbox">Annuler
-                </a>
+                <a  v-show="etatSelectCheckbox" @click="supps()"><b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon></a>
             </div>
-            <div class="level-right">
-                <a class="button is-info is-outlined is-rounded" 
-                    v-show="etatSelectCheckbox" 
-                    @click="supprimerPlusieursEvents()"><b-icon icon="delete"></b-icon>
-                </a>
+            
+            <div class="level-right" >
+                <a  @click="selectionner()"
+                    v-show="!etatSelectCheckbox"><b-icon icon="trash-can-outline" type="is-info" size="is-medium"></b-icon></a>
+                   
+                <a  @click="annulerSelection()" 
+                    v-show="etatSelectCheckbox"><b-icon icon="close-circle" type="is-info" size="is-medium"></b-icon></a>
             </div>
+            
         </div>
-
         <!-- Affichage de tout les événements -->
         <div class="columns is-multiline" v-show="!view">
             <div class="column is-one-third-desktop is-half-tablet" 
@@ -29,28 +28,7 @@ VIEW
                         </figure>
                         <div class="card-content is-overlay is-clipped">
                             <div class="level is-flex-mobile">
-                                <div class="level-left" v-show="!etatSelectCheckbox">
-                                    <b-dropdown>
-                                        <button class="button" slot="trigger">
-                                            <b-icon class="has-text-info" 
-                                                icon="dots-vertical-circle">
-                                            </b-icon>
-                                        </button>
-                                        <b-dropdown-item class="has-text-info"
-                                            @click="supprimerUnEvent(event)">
-                                            <b-icon icon="delete" size="is-small"></b-icon> 
-                                            Supprimer
-                                        </b-dropdown-item>
-                                        <b-dropdown-item class="has-text-info"
-                                            @click="selectionner()">
-                                            <b-icon icon="select-inverse" size="is-small"></b-icon> 
-                                            Selectionner
-                                        </b-dropdown-item>
-                                        <b-dropdown-item class="has-text-info">
-                                            <b-icon icon="heart" size="is-small"></b-icon> Favori
-                                        </b-dropdown-item>
-                                    </b-dropdown>
-                                </div>
+                                
                                 <div class="level-left" v-show="etatSelectCheckbox" >
                                     <b-checkbox v-model="event.selectionner"
                                         type="is-info">
@@ -247,5 +225,11 @@ export default {
 }
 #main {
     margin-top: 20px;
+    
+}
+#trash{
+    position: fixed;
+   z-index: 1;
+   left:10px;
 }
 </style>
