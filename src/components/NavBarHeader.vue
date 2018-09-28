@@ -12,9 +12,21 @@
                     <div class="col-sm-2 offset-md-1 py-4">
                         <h4 class="text-white"></h4>
                         <ul class="list-unstyled">
-                            <li><a href="#" class="text-white"><i class="fa fa-home"></i>&emsp;Acceuil</a></li>
-                            <li><a href="#" class="text-white"><i class="fa fa-image"></i>&emsp;Mes Albums</a></li>
-                            <li><a href="#" class="text-white"><i class="fa fa-gratipay"></i>&emsp;Mes Favoris</a></li>
+                            <li> 
+                                <a @click="goToAccueil()" class="text-white">
+                                    <b-icon icon="home" size="is-small"></b-icon> Acceuil
+                                </a>
+                            </li>
+                            <li> 
+                                <a @click="goToAlbum()" class="text-white">
+                                    <b-icon icon="image-multiple" size="is-small"></b-icon> Mes Albums
+                                </a>
+                            </li>
+                            <li> 
+                                <a class="text-white">
+                                    <b-icon icon="heart" size="is-small"></b-icon> Mes Favoris
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     <div class="col-sm-2 offset-md-1 py-4">
@@ -43,7 +55,7 @@
                 </b-modal>
                 <!--Bouton de navigation-->
                 <div class="d-flex align-items-center">
-                    <span class="navbar-brand"> {{currentUser.displayName}} </span>
+                    <span class="navbar-brand align-items-center"> {{currentUser.displayName}} </span>
                     <button class="navbar-toggler d-flex" type="button" v-on:click="show = !show">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -75,6 +87,12 @@
             ...mapGetters(['currentUser'])
         },
         methods: {
+            goToAccueil () {
+                this.$parent.condition = true
+            },
+            goToAlbum () {
+                this.$parent.condition = false
+            },
             deconnecter () {
                 auth.signOut().then(() => {
                     this.$store.dispatch('setUser', null)

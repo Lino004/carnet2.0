@@ -1,25 +1,28 @@
 <template>
     <div>
-          <nav-bar-header></nav-bar-header>
-          <main id="main" role="main">
-            <view-event></view-event>
-          </main>
+        <nav-bar-header></nav-bar-header>
+        <main id="main" role="main">
+          <view-event v-if="condition"></view-event>
+          <album v-else></album>
+        </main>
     </div>
 </template>
 
 <script>
 import ViewEvent from './ViewEvent'
 import NavBarHeader from './NavBarHeader'
+import Album from './Album'
 
 export default {
   name: 'acceuil',
   components: {
     ViewEvent,
-    NavBarHeader
+    NavBarHeader,
+    Album
   },
   data () {
     return {
-      
+      condition: true
     }
   }
 }

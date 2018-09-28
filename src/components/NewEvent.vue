@@ -9,7 +9,7 @@
 
             <b-field class="file">
                 <b-upload v-model="files">
-                    <a class="button is-primary">
+                    <a class="button is-info">
                         <b-icon icon="upload"></b-icon>
                         <span>Selectioner Image</span>
                     </a>
@@ -20,7 +20,7 @@
                 </span>
             </b-field>
 
-            <b-field label="Name">
+            <b-field label="Titre">
                 <b-input v-model="newEven.titre"></b-input>
             </b-field>
 
@@ -55,12 +55,12 @@
                 type="button" 
                 @click="closeAddModal">Annuler
             </button>
-            <button class="button is-primary" 
+            <button class="button is-info" 
                 type="button" 
                 disabled 
                 v-show="!champsRemplis">Ajouter
             </button>
-            <button class="button is-primary"
+            <button class="button is-info"
                 :class="{'is-loading': isLoading}"
                 type="button" 
                 @click.prevent="upload(files[0])" 

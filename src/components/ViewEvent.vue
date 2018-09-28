@@ -1,7 +1,7 @@
 VIEW
 <template>
     <div class="container" id="main">
-        
+
         <!-- Option de selection d'un événement -->
         <div class="level" v-show="etatOptionSelect">
             <div class="level-left">
@@ -19,7 +19,7 @@ VIEW
         </div>
 
         <!-- Affichage de tout les événements -->
-        <div class="columns is-multiline" v-show="!view">
+        <transition-group name="list" class="columns is-multiline" v-show="!view">
             <div class="column is-one-third-desktop is-half-tablet" 
                 v-for="event in events" :key="event.id">
                 <div class="card">
@@ -31,11 +31,12 @@ VIEW
                             <div class="level is-flex-mobile">
                                 <div class="level-left" v-show="!etatSelectCheckbox">
                                     <b-dropdown>
-                                        <button class="button" slot="trigger">
-                                            <b-icon class="has-text-info" 
-                                                icon="dots-vertical-circle">
-                                            </b-icon>
-                                        </button>
+                                       
+                                        <b-icon class="has-text-info" 
+                                            icon="dots-vertical"
+                                            slot="trigger">
+                                        </b-icon>
+                                        
                                         <b-dropdown-item class="has-text-info"
                                             @click="supprimerUnEvent(event)">
                                             <b-icon icon="delete" size="is-small"></b-icon> 
@@ -72,45 +73,63 @@ VIEW
                     </footer>
                 </div>
             </div>
-        </div>
+        </transition-group>
 
         <!-- Affichage de l'événement choisi -->
-        <div class="box" v-for="event in events" :key="event.id" v-show="view">
-            <div class="tile is-ancestor">
-                <div class="tile is-parent">
-                    <div class="tile is-child">
-                        <img :src="event.imageUrl" alt="">
-                    </div>
-                </div>
-                <div class="tile is-4 is-vertical is-parent">
-                    <div class="tile is-parent is-vertical box">
-                        <div class="tile is-child">
-                            <p class="title">{{event.titre}}</p>
-                            <p> {{event.recit}} </p>
-                        </div>
-                        <div class="tile is-child">
-                            <span class="tag is-white">Le {{event.date}} à {{event.lieu}}</span>
-                        </div>
-                    </div>
+        <transition name="bounce">        
+            <div class="box" v-for="event in events" :key="event.id" v-show="view">
+                <div class="tile is-ancestor">
                     <div class="tile is-parent">
                         <div class="tile is-child">
-                            <a class="card-footer-item button is-info is-outlined" 
-                                @click="voirMoins()">Voir &nbsp;
-                                <b-icon icon="window-minimize"></b-icon>
-                            </a>
+                            <img :src="event.imageUrl" alt="">
+                        </div>
+                    </div>
+                    <div class="tile is-4 is-vertical is-parent">
+                        <div class="tile is-parent is-vertical box">
+                            <div class="tile is-child">
+                                <p class="title">{{event.titre}}</p>
+                                <div id="over">
+                                    <p> {{event.recit}} </p>
+                                </div>
+                            </div>
+                            <div class="tile is-child">
+                                <span class="tag is-white">Le {{event.date}} à {{event.lieu}}</span>
+                            </div>
+                        </div>
+                        <div class="tile is-parent">
+                            <div class="tile is-child">
+                                <a class="card-footer-item button is-info is-outlined" 
+                                    @click="voirMoins()">Voir &nbsp;
+                                    <b-icon icon="window-minimize"></b-icon>
+                                </a>
+                            </div>
+                            <div class="tile is-child">
+                                <a class="card-footer-item button is-info is-outlined" 
+                                    @click="fenetreModalEdition = true">Editer
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Modification de l'Événement -->
+                <b-modal :active.sync="fenetreModalEdition" has-modal-card>
+                    <modif-event></modif-event>
+                </b-modal>
             </div>
-        </div>
+        </transition>
     </div>
 </template>
 
 <script>
 import {db, storage, auth} from '../firebase'
+import ModifEvent from './ModifEvent'
 
 export default {
     name: 'view-event',
+    components: {
+        ModifEvent
+    },
     data () {
         return {
             userId: auth.currentUser.uid, // Récupère Id de l'utilisateur
@@ -118,7 +137,8 @@ export default {
             view: false, // Variable d'état des diffirents mode d'affichage
             tempEvents: [], // Variable temporaire
             etatSelectCheckbox: false, // Variable d'état des checkbox
-            etatOptionSelect: true // Variable d'état de partie selection
+            etatOptionSelect: true, // Variable d'état de partie selection
+            fenetreModalEdition: false
         }
     },
     computed: {
@@ -247,5 +267,37 @@ export default {
 }
 #main {
     margin-top: 20px;
+}
+.bounce-enter-active {
+  animation: bounce-in .5s;
+}
+.bounce-leave-active {
+  animation: bounce-in .5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.list-item {
+  display: inline-block;
+  margin-right: 10px;
+}
+.list-enter-active, .list-leave-active {
+  transition: all 1s;
+}
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(30px);
+}
+#over{
+    height: 300px;
+    overflow: auto;
 }
 </style>
