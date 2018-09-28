@@ -77,9 +77,9 @@
 </section>
 </template>
 <script>
-import {db,auth} from '../firebase'
-export default {
-name: 'mon-compte',
+  import {db,auth} from '../firebase'
+  export default {
+    name: 'mon-compte',
 data() {
 return {
 etatModifierMonCompte: false,
@@ -100,8 +100,8 @@ this.dropFiles.splice(index, 1)
 </script>
 
 <style scoped>
-#profilContainer{
-border:50%;
+  #profilContainer{
+    border:50%;
 }
 </style>
 

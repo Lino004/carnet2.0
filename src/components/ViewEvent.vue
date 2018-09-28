@@ -3,21 +3,20 @@ VIEW
     <div class="container" id="main">
 
         <!-- Option de selection d'un événement -->
-        <div class="level" v-show="etatOptionSelect">
+        <div class="level" id='trash' v-show="etatOptionSelect">
             <div class="level-left">
-                <a class="button is-info is-outlined is-rounded" 
-                    @click="annulerSelection()" 
-                    v-show="etatSelectCheckbox">Annuler
-                </a>
+                <a  v-show="etatSelectCheckbox" @click="supprimerPlusieursEvents()"><b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon></a>
             </div>
-            <div class="level-right">
-                <a class="button is-info is-outlined is-rounded" 
-                    v-show="etatSelectCheckbox" 
-                    @click="supprimerPlusieursEvents()"><b-icon icon="delete"></b-icon>
-                </a>
+            
+            <div class="level-right" >
+                <a  @click="selectionner()"
+                    v-show="!etatSelectCheckbox"><b-icon icon="delete" type="is-info" size="is-medium"></b-icon></a>
+                   
+                <a  @click="annulerSelection()" 
+                    v-show="etatSelectCheckbox"><b-icon icon="close-circle" type="is-info" size="is-medium"></b-icon></a>
             </div>
+            
         </div>
-
         <!-- Affichage de tout les événements -->
         <transition-group name="list" class="columns is-multiline" v-show="!view">
             <div class="column is-one-third-desktop is-half-tablet" 
@@ -267,6 +266,12 @@ export default {
 }
 #main {
     margin-top: 20px;
+    
+}
+#trash{
+    position: fixed;
+   z-index: 1;
+   left:10px;
 }
 .bounce-enter-active {
   animation: bounce-in .5s;
