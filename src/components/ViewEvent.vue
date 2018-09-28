@@ -5,12 +5,12 @@ VIEW
         <!-- Option de selection d'un événement -->
         <div class="level" id='trash' v-show="etatOptionSelect">
             <div class="level-left">
-                <a  v-show="etatSelectCheckbox" @click="supps()"><b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon></a>
+                <a  v-show="etatSelectCheckbox" @click="supprimerPlusieursEvents()"><b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon></a>
             </div>
             
             <div class="level-right" >
                 <a  @click="selectionner()"
-                    v-show="!etatSelectCheckbox"><b-icon icon="trash-can-outline" type="is-info" size="is-medium"></b-icon></a>
+                    v-show="!etatSelectCheckbox"><b-icon icon="delete" type="is-info" size="is-medium"></b-icon></a>
                    
                 <a  @click="annulerSelection()" 
                     v-show="etatSelectCheckbox"><b-icon icon="close-circle" type="is-info" size="is-medium"></b-icon></a>
