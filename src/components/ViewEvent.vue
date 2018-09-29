@@ -1,4 +1,3 @@
-VIEW
 <template>
     <div class="container" id="main">
 
@@ -40,11 +39,6 @@ VIEW
                                             @click="supprimerUnEvent(event)">
                                             <b-icon icon="delete" size="is-small"></b-icon> 
                                             Supprimer
-                                        </b-dropdown-item>
-                                        <b-dropdown-item class="has-text-info"
-                                            @click="selectionner()">
-                                            <b-icon icon="select-inverse" size="is-small"></b-icon> 
-                                            Selectionner
                                         </b-dropdown-item>
                                         <b-dropdown-item class="has-text-info">
                                             <b-icon icon="heart" size="is-small"></b-icon> Favori
@@ -113,7 +107,7 @@ VIEW
 
                 <!-- Modification de l'Événement -->
                 <b-modal :active.sync="fenetreModalEdition" has-modal-card>
-                    <modif-event></modif-event>
+                    <modif-event :event="event" ></modif-event>
                 </b-modal>
             </div>
         </transition>
