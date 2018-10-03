@@ -1,8 +1,8 @@
 <template>
     <div class="container" id="main">
 
-        <!-- Option de selection d'un événement -->
-        <div class="level" id='trash' v-show="etatOptionSelect">
+        <!-- Option de suppression d'un événement -->
+        <div class="level column" id='trash' v-show="etatOptionSelect">
             <div class="level-left">
                 <a  v-show="etatSelectCheckbox" @click="supprimerPlusieursEvents()"><b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon></a>
             </div>
@@ -27,33 +27,15 @@
                         </figure>
                         <div class="card-content is-overlay is-clipped">
                             <div class="level is-flex-mobile">
-                                <div class="level-left" v-show="!etatSelectCheckbox">
-                                    <b-dropdown>
-                                       
-                                        <b-icon class="has-text-info" 
-                                            icon="dots-vertical"
-                                            slot="trigger">
-                                        </b-icon>
-                                        
-                                        <b-dropdown-item class="has-text-info"
-                                            @click="supprimerUnEvent(event)">
-                                            <b-icon icon="delete" size="is-small"></b-icon> 
-                                            Supprimer
-                                        </b-dropdown-item>
-                                        <b-dropdown-item class="has-text-info">
-                                            <b-icon icon="heart" size="is-small"></b-icon> Favori
-                                        </b-dropdown-item>
-                                    </b-dropdown>
+                                <div class="level-rigth">
+                                    <span class="tag is-info">
+                                        {{event.titre}} 
+                                    </span>
                                 </div>
                                 <div class="level-left" v-show="etatSelectCheckbox" >
                                     <b-checkbox v-model="event.selectionner"
                                         type="is-info">
                                     </b-checkbox>
-                                </div>
-                                <div class="level-rigth">
-                                    <span class="tag is-info">
-                                        {{event.titre}} 
-                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -157,6 +139,15 @@ export default {
                 this.events.push({...snap.val(), id: snap.key})
             })
         },
+        listenerEventSupp () {
+            this.eventsDbRef.on('child_removed', snap => {
+                const deleteEvent = this.events.find(ev => ev.id === snap.key)
+                console.log('deleteEvent = ',deleteEvent)
+                const index = this.events.indexOf(deleteEvent)
+                console.log('index = ',index)
+                this.events.splice(index, 1)
+            })
+        },
         detachListenerEvent () {
             this.eventsDbRef.off()
         },
@@ -191,34 +182,7 @@ export default {
                     e.forEach((ev) => {
                         this.supprimer(ev)
                     })
-                    location.reload()
-                }, 
-                onCancel: () => {
-                    this.events.forEach((ev) => {
-                        ev.selectionner = false
-                    })
-                    this.$toast.open({
-                        message: 'Suppression annulée'
-                    })
-                }
-            })
-        },
-        supprimerUnEvent (event) {
-            this.$dialog.confirm({
-                title: 'Confirmation',
-                message: 'Êtes-vous sûr de vouloir continuer ?',
-                cancelText: 'Non',
-                confimText: 'Oui',
-                type: 'is-danger',
-                hasIcon: true,
-                onConfirm: () => {
-                    event.selectionner = true
-                    this.miseAJourEvent()
-                    let e = this.events.filter(ev => ev.selectionner === true)
-                    e.forEach((ev) => {
-                        this.supprimer(ev)
-                    })
-                    location.reload()
+                    this.etatSelectCheckbox = false
                 }, 
                 onCancel: () => {
                     this.events.forEach((ev) => {
@@ -243,6 +207,7 @@ export default {
     },
     mounted () {
         this.listenerEventAdd()
+        this.listenerEventSupp()
         this.tempEvents = this.events
     },
     beforeDestroy () {
@@ -258,14 +223,10 @@ export default {
 .is-horizontal-center {
     justify-content: center;
 }
-#main {
-    margin-top: 20px;
-    
-}
 #trash{
     position: fixed;
-   z-index: 1;
-   left:10px;
+    z-index: 1;
+    left:10px;
 }
 .bounce-enter-active {
   animation: bounce-in .5s;
