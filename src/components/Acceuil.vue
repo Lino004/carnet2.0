@@ -13,18 +13,8 @@
               </b-tab-item>
 
               <b-tab-item label="Favoris" icon="heart">
-                <section class="hero is-medium is-bold landing-bg">
-                  <div class="hero-body overlay">
-                    <div class="container has-text-centered">
-                      <h1 class="title">
-                        Fast & Effective Video Training for Immunization Professionals      </h1>
-                      <h2 class="subtitle">
-                        Assess and track the performance of health workers, provide video training on essential immunization skills, or watch short video lessons. Anytime, anywhere and on any device.      </h2>
-                      <a href="/learn" class="button is-rounded is-large">Start Learning        <i class="triangle-2"></i>
-                      </a>
-                    </div>
-                  </div>
-                </section>
+                  lol
+                <backoundinitial></backoundinitial>
               </b-tab-item>
 
               <b-tab-item label="Destination" icon="airplane">
@@ -40,13 +30,15 @@
 import ViewEvent from './ViewEvent'
 import NavBarHeader from './NavBarHeader'
 import Album from './albums/Album'
+import BackoundInitial from './backoundinitial'
 
 export default {
   name: 'acceuil',
   components: {
     ViewEvent,
     NavBarHeader,
-    Album
+    Album,
+    BackoundInitial
   },
   data () {
     return {
