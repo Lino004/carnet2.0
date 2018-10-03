@@ -77,6 +77,7 @@ export default {
             var eventSelect = this.events.filter(ev => ev.selectionner === true)
             for(var i = 0; i < eventSelect.length ; i++ ) {
                 this.albumsDbRef.child(this.album.id + '/events').push({...eventSelect[i]}).then( () => {
+                    
                     this.closeModal()
                 }).catch( error => {
                     this.alertError(error.message)

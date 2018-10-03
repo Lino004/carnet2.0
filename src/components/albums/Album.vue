@@ -23,6 +23,10 @@
             <new-album></new-album>
         </b-modal>
 
+        <b-modal :active.sync="fenetreModalAddEvent" has-modal-card>
+            <add-event :album="albumActuel"></add-event>
+        </b-modal>
+
         <div v-for="album in albums" :key="album.id" class="shadow p-3 mb-5 bg-white rounded">
             <a class="">
                 <div class="level is-flex-mobile">
@@ -33,14 +37,11 @@
                         <a class="" @click="addEvent(album)">
                             <b-icon icon="plus-circle" type="is-info"></b-icon>
                         </a>
-                        <b-modal :active.sync="fenetreModalAddEvent" has-modal-card>
-                            <add-event :album="albumActuel" ></add-event>
-                        </b-modal>
                         <b-icon icon="arrow-down-drop-circle" type="is-info"></b-icon>
                     </div>
                 </div>
             </a>
-            {{album}}
+            {{album.events}}
         </div>
     </div>
 </template>
