@@ -1,68 +1,41 @@
 <template>
-    <header>
-            <div class="bg-dark" v-if="show">
-            <div class="container">
-                <div class="row">
-                <!--Texte descriptif de l'application-->
-                    <div class="col-sm-8 col-md-5 py-4">
-                        <h4 class="text-white">Album</h4>
-                        <p class="text-muted">Votre plateforme de voyage. Parcourez le monde et gardez vos souvenir près de vous à chaque moment</p>
-                    </div>
-                    <!--Menu de navigation de l'application-->
-                    <div class="col-sm-2 offset-md-1 py-4">
-                        <h4 class="text-white"></h4>
-                        <ul class="list-unstyled">
-                            <li> 
-                                <a @click="goToAccueil()" class="text-white">
-                                    <b-icon icon="home" size="is-small"></b-icon> Acceuil
-                                </a>
-                            </li>
-                            <li> 
-                                <a @click="goToAlbum()" class="text-white">
-                                    <b-icon icon="image-multiple" size="is-small"></b-icon> Mes Albums
-                                </a>
-                            </li>
-                            <li> 
-                                <a class="text-white">
-                                    <b-icon icon="heart" size="is-small"></b-icon> Mes Favoris
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-2 offset-md-1 py-4">
-                        <h4 class="text-white"></h4>
-                        <ul class="list-unstyled">
-                            <li><a href="#" class="text-white"><i class="fa fa-plane"> </i> Mes Destinations</a></li>
-                            <li><a href="#" class="text-white" @click="modalMonCompte = true"><i class="fa fa-user-circle"> </i> Mon compte</a></li>
-                            <li><a href="#" class="text-white" @click.prevent="deconnecter()"><i class="fa fa-sign-out"> </i> Deconnection</a></li>
-                        </ul>
+    <div>
+        <header>
+            <div class="navbar navbar-dark bg-dark box-shadow">
+                <div class="container d-flex justify-content-between">
+                    <!--Bouton d'ajout d'un evenement-->
+                    <a href="#" class="navbar-brand d-flex align-items-center" 
+                        @click="fenetreModalActive = true">
+                        <i class="fa fa-plus"></i>&nbsp;<span>Ajouter</span>
+                    </a>
+                    <b-modal :active.sync="fenetreModalActive" has-modal-card>
+                        <new-event></new-event>
+                    </b-modal>
+                    <!--Bouton de navigation-->
+                    <div class="d-flex align-items-center">
+                        <span class="navbar-brand align-items-center"> {{currentUser.displayName}} </span>
+                        
+                        <b-dropdown hoverable>
+                            <b-icon icon="account-circle" 
+                            type="is-white" 
+                            size="is-medium" 
+                            slot="trigger"></b-icon>
+
+                            <b-dropdown-item @click="modalMonCompte = true">Mon compte</b-dropdown-item>
+
+                            <b-modal :active.sync="modalMonCompte" has-modal-card>
+                                <mon-compte></mon-compte>
+                            </b-modal>
+
+                            <b-dropdown-item @click="deconnecter()">Déconnection</b-dropdown-item>
+                        </b-dropdown>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="navbar navbar-dark bg-dark box-shadow">
-            <div class="container d-flex justify-content-between">
-                <!--Bouton d'ajout d'un evenement-->
-                <a href="#" class="navbar-brand d-flex align-items-center" 
-                    @click="fenetreModalActive = true">
-                    <i class="fa fa-plus"></i>&nbsp;<span>Ajouter</span>
-                </a>
-                <b-modal :active.sync="fenetreModalActive" has-modal-card>
-                    <new-event></new-event>
-                </b-modal>
-                <b-modal :active.sync="modalMonCompte" has-modal-card>
-                    <mon-compte></mon-compte>
-                </b-modal>
-                <!--Bouton de navigation-->
-                <div class="d-flex align-items-center">
-                    <span class="navbar-brand align-items-center"> {{currentUser.displayName}} </span>
-                    <button class="navbar-toggler d-flex" type="button" v-on:click="show = !show">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
+        </header>
+        <section>
+    </section>
+    </div>
 </template>
 <script>
     import { auth } from '../firebase'
@@ -88,9 +61,11 @@
         },
         methods: {
             goToAccueil () {
+                this.show = !this.show
                 this.$parent.condition = true
             },
             goToAlbum () {
+                this.show = !this.show
                 this.$parent.condition = false
             },
             deconnecter () {

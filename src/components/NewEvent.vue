@@ -80,7 +80,7 @@ export default {
             userId: auth.currentUser.uid,
             files: [],
 
-            // Objet récupérent les informations de saisie
+            // Objet récupérent les informations saisies
             newEven: {
                 titre: '',
                 lieu: '',
