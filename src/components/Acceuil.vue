@@ -13,7 +13,6 @@
               </b-tab-item>
 
               <b-tab-item label="Favoris" icon="heart">
-                  lol
                 <backoundinitial></backoundinitial>
               </b-tab-item>
 
@@ -30,7 +29,7 @@
 import ViewEvent from './ViewEvent'
 import NavBarHeader from './NavBarHeader'
 import Album from './albums/Album'
-import BackoundInitial from './backoundinitial'
+import BackoundInitial from './Backoundinitial'
 
 export default {
   name: 'acceuil',
