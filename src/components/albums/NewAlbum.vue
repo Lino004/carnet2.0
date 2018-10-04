@@ -43,7 +43,7 @@ export default {
         },
         ajoutAlbum () {
             let key = this.albumsDbRef.push().key
-            let newAlbum = {id: key, name: this.nomAlbum, actif: false}
+            let newAlbum = {id: key, name: this.nomAlbum, actif: false, selectionner: false}
 
             this.albumsDbRef.child(key).update(newAlbum).then( () => {
                 this.nomAlbum = ''

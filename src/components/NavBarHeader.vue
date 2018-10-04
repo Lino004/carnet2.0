@@ -13,7 +13,7 @@
                     </b-modal>
                     <!--Bouton de navigation-->
                     <div class="d-flex align-items-center">
-                        <span class="navbar-brand align-items-center"> {{currentUser.displayName}} </span>
+                        <span class="navbar-brand align-items-center"> {{user.displayName}} </span>
                         
                         <b-dropdown hoverable>
                             <b-icon icon="account-circle" 
@@ -22,13 +22,12 @@
                             slot="trigger"></b-icon>
 
                             <b-dropdown-item @click="modalMonCompte = true">Mon compte</b-dropdown-item>
-
-                            <b-modal :active.sync="modalMonCompte" has-modal-card>
-                                <mon-compte></mon-compte>
-                            </b-modal>
-
                             <b-dropdown-item @click="deconnecter()">Déconnection</b-dropdown-item>
+                            
                         </b-dropdown>
+                        <b-modal :active.sync="modalMonCompte" has-modal-card>
+                            <mon-compte></mon-compte>
+                        </b-modal>
                     </div>
                 </div>
             </div>
@@ -39,7 +38,6 @@
 </template>
 <script>
     import { auth } from '../firebase'
-    import { mapGetters } from 'vuex'
     import NewEvent from './NewEvent'
     import MonCompte from './MonCompte'
     
@@ -57,7 +55,9 @@
             }
         },
         computed: {
-            ...mapGetters(['currentUser'])
+            user () {
+                return auth.currentUser
+            }
         },
         methods: {
             goToAccueil () {

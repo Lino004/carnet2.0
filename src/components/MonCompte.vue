@@ -1,107 +1,180 @@
 <template>
-  <section>
-    <form>
-        <div class="modal-card" style="width: auto">
-          <header class="modal-card-head">
-           <p class="modal-card-title has-text-centered">Mon Compte</p>
-          </header>
-          <section class="modal-card-body">
-            <div class="container">
-              <div class="row">
-                <div class="col-sm-8 col-md-5 py-4">
-                  <b-field>
-                    <b-upload v-model="dropFiles"
-                    multiple
-                    drag-drop >
-                      <section class="section">
-                        <div class="content has-text-centered " id="profilContainer">
-                          <p>
-                            <b-icon icon="upload" size="is-large"> </b-icon>
-                          </p>
-                           <p>Ajouter Photo de profil</p>
-                            <span v-for="(file, index) in dropFiles"
-                              :key="index"
-                              class="tag is-primary" >
-                              {{file.name}}
-                                <button class="delete is-small"
-                                type="button"
-                                @click="deleteDropFile(index)">
-                                </button>
-                            </span>
-                        </div>
-                      </section>
-                    </b-upload>
-                  </b-field>
+  <div class="modal-card">
+
+    <header class="modal-card-head">
+      <p class="modal-card-title has-text-centered">Mon Compte</p>
+    </header>
+
+    <section class="modal-card-body">
+      <div class="tile is-ancestor" v-show="!view">
+        <div class="tile is-parent">
+            <div class="tile is-child">
+                <div class="columns is-mobile is-centered">
+                  <b-upload v-model="file">
+                    <div v-if="file.length" >
+                      <button class="button is-info" 
+                          type="button"
+                          :class="{'is-loading': isLoading}"
+                          @click="upload(file[0])">Mettre à jour
+                      </button>
+                      <button class="button" 
+                        type="button" 
+                        @click="file = []">Annuler
+                      </button>
+                    </div>
+                    <figure v-else class="is-centered is-half image is-128x128">
+                      <img class="is-rounded" :src="user.photoURL">
+                    </figure>
+                  </b-upload>
                 </div>
-                <div class="col-sm-4 py-4">
-                  <b-field label="Pseudo">
-                    <b-input
-                    type="text"
-                    :value="pseudo"
-                    placeholder="Votre Pseudo "
-                    required>
-                    </b-input>
-                  </b-field> 
-                  <b-field label="Email">
-                    <b-input
-                    type="email"
-                    :value="email"
-                    placeholder="Votre email"
-                    required>
-                    </b-input>
-                  </b-field>
-                  <b-field label="Mot de passe">
-                    <b-input
-                    type="password"
-                    :value="password"
-                    password-reveal
-                    placeholder="Votre mot de passe"
-                    required>
-                    </b-input>
-                  </b-field>
-                </div>
-              </div>
             </div>
-          </section>
-          <footer class="modal-card-foot">
-            <a class="button is-info is-outlined is-rounded" @click="$parent.close()">Fermer</a>
-            <a class="button is-info is-outlined is-rounded" 
-            @click="selectionner()"
-            v-show="!etatSelectCheckbox">Modifier</a>
-            <a class="button is-info is-outlined is-rounded" 
-            @click="annulerSelection()" 
-            v-show="etatSelectCheckbox">Annuler</a>
-          </footer>
         </div>
-    </form>
-</section>
+        <div class="tile is-vertical is-parent">
+            <b-field label="Pseudo :">
+              <p class="subtitle is-6"> {{user.displayName}} </p>
+            </b-field>
+            <b-field label="Email :">
+              <p class="subtitle is-6"> {{user.email}} </p>
+            </b-field>
+        </div>
+      </div>
+
+      <div class="tile is-ancestor" v-show="view">
+        <div class="tile is-vertical is-parent">
+            <b-field label="Pseudo :">
+               <b-input type="text" v-model="user.displayName" placeholder="Votre Pseudo " required></b-input>
+            </b-field>
+            <b-field label="Email :">
+              <b-input type="email" v-model="user.email" placeholder="Votre email"  required></b-input>
+            </b-field>
+            <b-field label="Mot de passe">
+              <b-input type="password" v-model="password" password-reveal
+                  placeholder="Votre mot de passe"
+                  required>
+              </b-input>
+            </b-field>
+        </div>
+      </div>
+    </section>
+
+    <footer class="modal-card-foot">
+      <div v-show="!view">
+        <button class="button" 
+          type="button" 
+          @click="$parent.close()">Fermer
+        </button>
+        <button class="button is-info" 
+            type="button"
+            @click="view = true">Modifier
+        </button>
+      </div>
+      <div v-show="view">
+        <button class="button" 
+          type="button" 
+          @click="$parent.close()">Annuler
+        </button>
+        <button class="button is-info" 
+            type="button"
+            @click="modifier()">Modifier
+        </button>
+      </div>
+    </footer>
+
+  </div>
 </template>
+
 <script>
-  import {db,auth} from '../firebase'
+  import { db, storage, auth } from '../firebase'
+
   export default {
     name: 'mon-compte',
-data() {
-return {
-etatModifierMonCompte: false,
-isComponentModalActive: false,
-userRef: db.ref('users/'+auth.currentUser.ui),
-dropFiles: []
-}
-} ,
-methods: {
-selectionner () {
-this.etatSelectCheckbox = true
-},
-deleteDropFile(index) {
-this.dropFiles.splice(index, 1)
-}
-}
-}
+    data() {
+      return {
+        view: false,
+        file: [],
+        password: '',
+        uploadTask: null,
+        isLoading: false
+      }
+    },
+    computed: {
+      user () {
+        return auth.currentUser
+      }
+    },
+    methods: {
+      upload (file) {
+        this.isLoading = true
+        console.log('en cours uploadImage')
+        this.uploadTask = storage.ref(this.user.uid + '/profile/' + file.name).put(file)
+      },
+      updateProfile () {
+        this.user.updateProfile({
+           displayName: this.user.displayName
+         }).then(function() {
+          console.log('success uploadProfil')
+        })
+      },
+      updateImage (imageUrl){
+        this.user.updateProfile({
+          photoURL: imageUrl
+        }).then(function() {
+          console.log('success uploadImage')
+          this.file = []
+        })
+      },
+      updateEmail () {
+        this.user.updateEmail(this.user.email).then(function() {
+          console.log('success uploadEmail')
+        }).catch(function(error) {
+          this.alertError(error.message)
+        })
+      },
+      upadatePass () {
+        if (this.password.length >= 8) {
+          user.updatePassword(this.password).then(function() {
+            console.log('success uploadPass')
+          }).catch(function(error) {
+            this.alertError(error.message)
+          })
+        }else{
+          this.alertError("Le mot de passe doit avoir au moins 8 caractère")
+        }
+      },
+      modifier () {
+        this.updateProfile()
+        this.updateEmail()
+        if (this.password.length > 0) {
+          this.upadatePass()
+        }
+        this.$parent.close()
+      },
+      alertError(message) {
+          this.$toast.open({
+              message: message,
+              position: 'is-bottom',
+              type: 'is-danger'
+          })
+      }
+    },
+    watch: {
+      uploadTask: function () {
+        this.uploadTask.on('state_changed', snapshot => {
+          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          console.log('progress is ' + progress + '% done')
+        },
+        null,
+        () => {
+          this.uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+            this.$emit('url', downloadURL)
+            console.log(downloadURL)
+            this.updateImage(downloadURL)
+          })
+        })
+      }
+    }
+  }
 </script>
 
-<style scoped>
-  #profilContainer{
-    border:50%;
-}
-</style>
+<style scoped></style>
 

@@ -86,7 +86,8 @@ export default {
       auth.createUserWithEmailAndPassword(this.email, this.passwordVerification).then(infoUser => {
 
         infoUser.user.updateProfile({
-          displayName: this.pseudo
+          displayName: this.pseudo,
+          photoURL: "https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2Fcompte.png?alt=media&token=94e1cc48-c416-4918-affb-0ec99898eeef"
         }).then( () =>{
           this.saveUserToUsersRef(infoUser.user).then( () =>{
             this.$store.dispatch('setUser', infoUser.user)
