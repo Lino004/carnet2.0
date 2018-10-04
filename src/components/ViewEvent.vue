@@ -2,11 +2,14 @@
     <div class="container" id="main">
 
         <!-- Option de suppression d'un événement -->
+    
         <div class="level column" id='trash' v-show="etatOptionSelect">
             <div class="level-left">
-                <a  v-show="etatSelectCheckbox" @click="supprimerPlusieursEvents()">
-                    <b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon>
-                </a>
+                <a  v-show="etatSelectCheckbox" @click="supprimerPlusieursEvents()"><b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon></a>
+                <!--Bouton d'ajout d'un evenement-->
+                <a @click="fenetreModalActive = true">
+                        <b-icon icon="plus-circle" type="is-info" size="is-medium"></b-icon>
+                    </a>
             </div>
             
             <div class="level-right" >
@@ -22,6 +25,9 @@
             </div>
             
         </div>
+        <b-modal :active.sync="fenetreModalActive" has-modal-card>
+                        <new-event></new-event>
+                    </b-modal> 
         <!-- Affichage de tout les événements -->
         <transition-group name="list" class="columns is-multiline" v-show="!view">
             <div class="column is-one-third-desktop is-half-tablet" 
@@ -105,11 +111,12 @@
 <script>
 import {db, storage, auth} from '../firebase'
 import ModifEvent from './ModifEvent'
-
+import  NewEvent from './NewEvent'
 export default {
     name: 'view-event',
     components: {
-        ModifEvent
+        ModifEvent,
+        NewEvent
     },
     data () {
         return {
@@ -119,7 +126,8 @@ export default {
             tempEvents: [], // Variable temporaire
             etatSelectCheckbox: false, // Variable d'état des checkbox
             etatOptionSelect: true, // Variable d'état de partie selection
-            fenetreModalEdition: false
+            fenetreModalEdition: false,
+            fenetreModalActive: false
         }
     },
     computed: {
@@ -232,6 +240,7 @@ export default {
     z-index: 1;
     left:10px;
 }
+
 .bounce-enter-active {
   animation: bounce-in .5s;
 }

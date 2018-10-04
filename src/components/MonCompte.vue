@@ -120,7 +120,7 @@
           photoURL: imageUrl
         }).then(function() {
           console.log('success uploadImage')
-          this.file = []
+          this.file = null
         })
       },
       updateEmail () {

@@ -143,7 +143,7 @@ export default {
                     this.etatOptionSelect = true
                 }
                 this.events.push({...snap.val(), id: snap.key})
-                this.events = this.events.filter( ev => ev.favori = true)
+                this.events = this.events.filter( ev => ev.favori === true)
             })
         },
         listenerEventSupp () {

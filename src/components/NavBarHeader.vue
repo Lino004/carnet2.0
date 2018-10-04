@@ -1,18 +1,13 @@
 <template>
     <div>
         <header>
-            <div class="navbar navbar-dark bg-dark box-shadow">
+            <div class="navbar">
                 <div class="container d-flex justify-content-between">
-                    <!--Bouton d'ajout d'un evenement-->
-                    <a href="#" class="navbar-brand d-flex align-items-center" 
-                        @click="fenetreModalActive = true">
-                        <i class="fa fa-plus"></i>&nbsp;<span>Ajouter</span>
-                    </a>
-                    <b-modal :active.sync="fenetreModalActive" has-modal-card>
-                        <new-event></new-event>
-                    </b-modal>
-                    <!--Bouton de navigation-->
-                    <div class="d-flex align-items-center">
+                     <a class="site-logo"  href="index.html">
+                        <img src="../style/images/TRIP.png" alt="Homepage">
+                     </a>
+                    
+                    <div class="d-flex align-items-center text-white" id="compte">
                         <span class="navbar-brand align-items-center"> {{user.displayName}} </span>
                         
                         <b-dropdown hoverable>
@@ -78,6 +73,18 @@
     }
 </script>
 <style>
-
+.site-logo{
+width: 60px;
+height: 60px;
+margin-bottom:10px;
+margin-top: -10px;
+margin-left:-100px;
+}
+.navbar{
+    background-image: linear-gradient(to bottom,#3e0aa9,#5128a6)
+}
+#compte{
+   margin-right:-40px; 
+}
 </style>
 

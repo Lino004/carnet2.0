@@ -203,7 +203,6 @@ export default {
 }
 #trash{
     position: fixed;
-    z-index: 1;
     left:10px;
 }
 </style>
