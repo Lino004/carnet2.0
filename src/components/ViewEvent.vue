@@ -1,11 +1,15 @@
-VIEW
 <template>
     <div class="container" id="main">
-        
-        <!-- Option de selection d'un événement -->
-        <div class="level" id='trash' v-show="etatOptionSelect">
+
+        <!-- Option de suppression d'un événement -->
+    
+        <div class="level column" id='trash' v-show="etatOptionSelect">
             <div class="level-left">
                 <a  v-show="etatSelectCheckbox" @click="supprimerPlusieursEvents()"><b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon></a>
+                <!--Bouton d'ajout d'un evenement-->
+                <a @click="fenetreModalActive = true">
+                        <b-icon icon="plus-circle" type="is-info" size="is-medium"></b-icon>
+                    </a>
             </div>
             
             <div class="level-right" >
@@ -17,8 +21,11 @@ VIEW
             </div>
             
         </div>
+        <b-modal :active.sync="fenetreModalActive" has-modal-card>
+                        <new-event></new-event>
+                    </b-modal> 
         <!-- Affichage de tout les événements -->
-        <div class="columns is-multiline" v-show="!view">
+        <transition-group name="list" class="columns is-multiline" v-show="!view">
             <div class="column is-one-third-desktop is-half-tablet" 
                 v-for="event in events" :key="event.id">
                 <div class="card">
@@ -28,16 +35,15 @@ VIEW
                         </figure>
                         <div class="card-content is-overlay is-clipped">
                             <div class="level is-flex-mobile">
-                                
-                                <div class="level-left" v-show="etatSelectCheckbox" >
-                                    <b-checkbox v-model="event.selectionner"
-                                        type="is-info">
-                                    </b-checkbox>
-                                </div>
                                 <div class="level-rigth">
                                     <span class="tag is-info">
                                         {{event.titre}} 
                                     </span>
+                                </div>
+                                <div class="level-left" v-show="etatSelectCheckbox" >
+                                    <b-checkbox v-model="event.selectionner"
+                                        type="is-info">
+                                    </b-checkbox>
                                 </div>
                             </div>
                         </div>
@@ -50,45 +56,64 @@ VIEW
                     </footer>
                 </div>
             </div>
-        </div>
+        </transition-group>
 
         <!-- Affichage de l'événement choisi -->
-        <div class="box" v-for="event in events" :key="event.id" v-show="view">
-            <div class="tile is-ancestor">
-                <div class="tile is-parent">
-                    <div class="tile is-child">
-                        <img :src="event.imageUrl" alt="">
-                    </div>
-                </div>
-                <div class="tile is-4 is-vertical is-parent">
-                    <div class="tile is-parent is-vertical box">
-                        <div class="tile is-child">
-                            <p class="title">{{event.titre}}</p>
-                            <p> {{event.recit}} </p>
-                        </div>
-                        <div class="tile is-child">
-                            <span class="tag is-white">Le {{event.date}} à {{event.lieu}}</span>
-                        </div>
-                    </div>
+        <transition name="bounce">        
+            <div class="box" v-for="event in events" :key="event.id" v-show="view">
+                <div class="tile is-ancestor">
                     <div class="tile is-parent">
                         <div class="tile is-child">
-                            <a class="card-footer-item button is-info is-outlined" 
-                                @click="voirMoins()">Voir &nbsp;
-                                <b-icon icon="window-minimize"></b-icon>
-                            </a>
+                            <img :src="event.imageUrl" alt="">
+                        </div>
+                    </div>
+                    <div class="tile is-4 is-vertical is-parent">
+                        <div class="tile is-parent is-vertical box">
+                            <div class="tile is-child">
+                                <p class="title">{{event.titre}}</p>
+                                <div id="over">
+                                    <p> {{event.recit}} </p>
+                                </div>
+                            </div>
+                            <div class="tile is-child">
+                                <span class="tag is-white">Le {{event.date}} à {{event.lieu}}</span>
+                            </div>
+                        </div>
+                        <div class="tile is-parent">
+                            <div class="tile is-child">
+                                <a class="card-footer-item button is-info is-outlined" 
+                                    @click="voirMoins()">Voir &nbsp;
+                                    <b-icon icon="window-minimize"></b-icon>
+                                </a>
+                            </div>
+                            <div class="tile is-child">
+                                <a class="card-footer-item button is-info is-outlined" 
+                                    @click="fenetreModalEdition = true">Editer
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Modification de l'Événement -->
+                <b-modal :active.sync="fenetreModalEdition" has-modal-card>
+                    <modif-event :event="event" ></modif-event>
+                </b-modal>
             </div>
-        </div>
+        </transition>
     </div>
 </template>
 
 <script>
 import {db, storage, auth} from '../firebase'
-
+import ModifEvent from './ModifEvent'
+import  NewEvent from './NewEvent'
 export default {
     name: 'view-event',
+    components: {
+        ModifEvent,
+        NewEvent
+    },
     data () {
         return {
             userId: auth.currentUser.uid, // Récupère Id de l'utilisateur
@@ -96,7 +121,9 @@ export default {
             view: false, // Variable d'état des diffirents mode d'affichage
             tempEvents: [], // Variable temporaire
             etatSelectCheckbox: false, // Variable d'état des checkbox
-            etatOptionSelect: true // Variable d'état de partie selection
+            etatOptionSelect: true, // Variable d'état de partie selection
+            fenetreModalEdition: false,
+            fenetreModalActive: false
         }
     },
     computed: {
@@ -120,6 +147,15 @@ export default {
                     this.etatOptionSelect = true
                 }
                 this.events.push({...snap.val(), id: snap.key})
+            })
+        },
+        listenerEventSupp () {
+            this.eventsDbRef.on('child_removed', snap => {
+                const deleteEvent = this.events.find(ev => ev.id === snap.key)
+                console.log('deleteEvent = ',deleteEvent)
+                const index = this.events.indexOf(deleteEvent)
+                console.log('index = ',index)
+                this.events.splice(index, 1)
             })
         },
         detachListenerEvent () {
@@ -156,34 +192,7 @@ export default {
                     e.forEach((ev) => {
                         this.supprimer(ev)
                     })
-                    location.reload()
-                }, 
-                onCancel: () => {
-                    this.events.forEach((ev) => {
-                        ev.selectionner = false
-                    })
-                    this.$toast.open({
-                        message: 'Suppression annulée'
-                    })
-                }
-            })
-        },
-        supprimerUnEvent (event) {
-            this.$dialog.confirm({
-                title: 'Confirmation',
-                message: 'Êtes-vous sûr de vouloir continuer ?',
-                cancelText: 'Non',
-                confimText: 'Oui',
-                type: 'is-danger',
-                hasIcon: true,
-                onConfirm: () => {
-                    event.selectionner = true
-                    this.miseAJourEvent()
-                    let e = this.events.filter(ev => ev.selectionner === true)
-                    e.forEach((ev) => {
-                        this.supprimer(ev)
-                    })
-                    location.reload()
+                    this.etatSelectCheckbox = false
                 }, 
                 onCancel: () => {
                     this.events.forEach((ev) => {
@@ -208,6 +217,7 @@ export default {
     },
     mounted () {
         this.listenerEventAdd()
+        this.listenerEventSupp()
         this.tempEvents = this.events
     },
     beforeDestroy () {
@@ -223,13 +233,42 @@ export default {
 .is-horizontal-center {
     justify-content: center;
 }
-#main {
-    margin-top: 20px;
-    
-}
 #trash{
     position: fixed;
-   z-index: 1;
-   left:10px;
+    z-index: 1;
+    left:10px;
+}
+
+.bounce-enter-active {
+  animation: bounce-in .5s;
+}
+.bounce-leave-active {
+  animation: bounce-in .5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.list-item {
+  display: inline-block;
+  margin-right: 10px;
+}
+.list-enter-active, .list-leave-active {
+  transition: all 1s;
+}
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(30px);
+}
+#over{
+    height: 300px;
+    overflow: auto;
 }
 </style>
