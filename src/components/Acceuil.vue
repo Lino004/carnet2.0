@@ -13,7 +13,7 @@
               </b-tab-item>
 
               <b-tab-item label="Favoris" icon="heart">
-                
+                <favoris></favoris>
               </b-tab-item>
 
           </b-tabs>
@@ -23,6 +23,7 @@
 
 <script>
 import ViewEvent from './ViewEvent'
+import Favoris from './Favoris'
 import NavBarHeader from './NavBarHeader'
 import Album from './albums/Album'
 
@@ -31,7 +32,8 @@ export default {
   components: {
     ViewEvent,
     NavBarHeader,
-    Album
+    Album,
+    Favoris
   },
   data () {
     return {

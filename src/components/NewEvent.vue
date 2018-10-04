@@ -88,7 +88,8 @@ export default {
                 recit: '',
                 imageUrl: null,
                 imageRef: null,
-                selectionner: false
+                selectionner: false,
+                favori: false
             },
             
             uploadTask: null,
