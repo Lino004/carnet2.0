@@ -35,10 +35,6 @@
                             <p>Ou <router-link to="/login"><strong class="text-primary">allez à la page de connexion</strong></router-link></p>
                         </div>
 
-                        <div class="alert alert-danger" v-show="etatErr">
-                            <strong>Erreur!</strong> {{erreurs}}
-                        </div>
-
                         <div class="container-login100-form-btn">
 
                             <div class="wrap-login100-form-btn">
@@ -65,8 +61,6 @@ export default {
       password: '',
       pseudo: '',
       passwordConfirme: '',
-      erreurs: '',
-      etatErr: null,
       erreurPass: null,
       usersRef: db.ref('users'),
       isLoading: false
@@ -92,18 +86,18 @@ export default {
       auth.createUserWithEmailAndPassword(this.email, this.passwordVerification).then(infoUser => {
 
         infoUser.user.updateProfile({
-          displayName: this.pseudo
+          displayName: this.pseudo,
+          photoURL: "https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2Fcompte.png?alt=media&token=94e1cc48-c416-4918-affb-0ec99898eeef"
         }).then( () =>{
           this.saveUserToUsersRef(infoUser.user).then( () =>{
             this.$store.dispatch('setUser', infoUser.user)
-            this.$router.push('/acceuil')
+            this.$router.push('/')
           })
         })
 
       }).catch(err => {
         this.isLoading = false
-        this.etatErr = true
-        this.erreurs = err.message
+        this.alertError(err.message)
       })
       
     },
@@ -112,6 +106,13 @@ export default {
         pseudo: user.displayName,
         email: user.email
       })
+    },
+    alertError(message) {
+        this.$toast.open({
+            message: message,
+            position: 'is-bottom',
+            type: 'is-danger'
+        })
     }
   }
 }
