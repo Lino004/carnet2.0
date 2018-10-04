@@ -1,6 +1,7 @@
 <template>
     <div>
         <nav-bar-header></nav-bar-header>
+        <background-initial></background-initial>
         <main id="main" role="main">
           <b-tabs type="is-boxed is-centered" v-model="menuActif">
 
@@ -13,7 +14,7 @@
               </b-tab-item>
 
               <b-tab-item label="Favoris" icon="heart">
-                <backoundinitial></backoundinitial>
+                
               </b-tab-item>
 
               <b-tab-item label="Destination" icon="airplane">
@@ -29,7 +30,7 @@
 import ViewEvent from './ViewEvent'
 import NavBarHeader from './NavBarHeader'
 import Album from './albums/Album'
-import BackoundInitial from './Backoundinitial'
+import BackgroundInitial from './BackgroundInitial'
 
 export default {
   name: 'acceuil',
@@ -37,7 +38,7 @@ export default {
     ViewEvent,
     NavBarHeader,
     Album,
-    BackoundInitial
+    BackgroundInitial
   },
   data () {
     return {
@@ -50,7 +51,7 @@ export default {
 
 <style src="../style/fonts/font-awesome-4.7.0/css/font-awesome.min.css"></style>
 <style>
-.hero.is-medium.landing-bg {
+.hero.is-small.landing-bg {
     background-repeat: no-repeat;
     background: url('https://www.immunizationacademy.com/img/hero_landing.jpg') center center;
     background-size: cover;
