@@ -24,21 +24,21 @@
         </div>
         <!-- Affichage de tout les événements -->
         <transition-group name="list" class="columns is-multiline" v-show="!view">
-            <div class="column is-one-third-desktop is-half-tablet" 
-                v-for="event in eventFavoris" :key="event.id">
+            <div class="column is-one-fifth-desktop is-half-tablet is-mobile" 
+                v-for="event in events" :key="event.id">
                 <div class="card">
                     <div class="card-image is-flex is-horizontal-center">
                         <figure>
                             <img class="img-view1" :src="event.imageUrl" alt="">
                         </figure>
-                        <div class="card-content is-overlay is-clipped">
+                        <div class="is-overlay is-clipped" style="margin: 10px">
                             <div class="level is-flex-mobile">
                                 <div class="level-rigth">
                                     <a @click="voirPlus(event)">
-                                        <b-icon icon="eye-plus-outline" type="is-info" size="is-medium"></b-icon>
+                                        <b-icon icon="eye-plus-outline" type="is-info" size=""></b-icon>
                                     </a>
                                 </div>
-                                <div class="level-left" v-show="etatSelectCheckbox" >
+                                <div class="level-left" v-show="etatSelectCheckbox">
                                     <b-checkbox v-model="event.selectionner"
                                         type="is-info">
                                     </b-checkbox>
@@ -47,8 +47,7 @@
                         </div>
                     </div>
                     <footer class="card-footer">
-                        <span class="card-footer-item title is-5 is-outlined">{{event.titre}}
-                        </span>
+                        <span class="card-footer-item title is-5 is-outlined">{{event.titre}}</span>
                     </footer>
                 </div>
             </div>
@@ -56,7 +55,7 @@
 
         <!-- Affichage de l'événement choisi -->
         <transition name="bounce">        
-            <div class="box" v-for="event in eventFavoris" :key="event.id" v-show="view">
+            <div class="box" v-for="event in events" :key="event.id" v-show="view">
                 <div class="tile is-ancestor">
                     <div class="tile is-parent">
                         <div class="tile is-child">
@@ -123,9 +122,6 @@ export default {
     computed: {
         eventsDbRef () {
             return db.ref('events/' + this.userId)
-        },
-        eventFavoris () {
-            return this.events.filter(ev => ev.favori === true)
         }
     },
     methods: {
@@ -140,10 +136,8 @@ export default {
         },
         listenerEventAdd () {
             this.eventsDbRef.on('child_added', snap => {
-                if ( snap.val !== null) {
-                    this.etatOptionSelect = true
-                }
-                this.events.push({...snap.val(), id: snap.key})
+                this.tempEvents.push({...snap.val(), id: snap.key})
+                this.events = this.tempEvents.filter(ev => ev.favori === true)
             })
         },
         listenerEventSupp () {
@@ -155,9 +149,14 @@ export default {
         },
         listenerEventChange () {
             this.eventsDbRef.on('child_changed', snap => {
-                console.log('events =',this.events)
-                const eventChanged = this.events.find(ev => ev.id === snap.key)
-                this.events.push({...snap.val(), id: snap.key})
+                console.log('valBoolFavo = ' + snap.val().favori)
+                if (snap.val().favori){
+                    this.events.push({...snap.val(), id: snap.key})
+                }else{
+                    const deleteEvent = this.events.find(ev => ev.id === snap.key)
+                    const index = this.events.indexOf(deleteEvent)
+                    this.events.splice(index, 1)
+                }
             })
         },
         detachListenerEvent () {
@@ -174,6 +173,10 @@ export default {
             this.events.forEach((ev) => {
                 this.eventsDbRef.child(ev.id).update({...ev})
             })
+        },
+        favoris (event)  {
+            event.favori = !event.favori
+            this.eventsDbRef.child(event.id).update({favori: event.favori})
         },
         supprimerPlusieursEvents () {
             this.$dialog.confirm({
@@ -226,7 +229,7 @@ export default {
 
 <style scoped>
 .img-view1 {
-	height:300px;
+	height: 150px;
 }
 .is-horizontal-center {
     justify-content: center;

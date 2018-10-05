@@ -2,28 +2,27 @@
     <div>
         <header>
             <div class="navbar">
-                <div class="container d-flex is-flex-mobile ">
-                     <a class="site-logo"  href="index.html">
-                        <img src="https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2FTRIP.png?alt=media&token=4e9771ae-c683-4e1c-b3c9-0814d28aadad" alt="Homepage">
-                     </a>
+                <div class="navbar-brand">
+                    <a class=""  href="index.html">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2FTRIP.png?alt=media&token=4e9771ae-c683-4e1c-b3c9-0814d28aadad" width="60" alt="Homepage">
+                    </a>
+                </div>
+                <div class="navbar-end d-flex align-items-center text-white">
+                    <span class="navbar-brand align-items-center"> {{user.displayName}} </span>
                     
-                    <div class="d-flex align-items-center text-white" id="compte">
-                        <span class="navbar-brand align-items-center"> {{user.displayName}} </span>
-                        
-                        <b-dropdown hoverable>
-                            <b-icon icon="account-circle" 
+                    <b-dropdown hoverable>
+                        <b-icon icon="account-circle" 
                             type="is-white" 
                             size="is-medium" 
                             slot="trigger"></b-icon>
 
-                            <b-dropdown-item @click="modalMonCompte = true">Mon compte</b-dropdown-item>
-                            <b-dropdown-item @click="deconnecter()">Déconnection</b-dropdown-item>
-                            
-                        </b-dropdown>
-                        <b-modal :active.sync="modalMonCompte" has-modal-card>
-                            <mon-compte></mon-compte>
-                        </b-modal>
-                    </div>
+                        <b-dropdown-item @click="modalMonCompte = true">Mon compte</b-dropdown-item>
+                        <b-dropdown-item @click="deconnecter()">Déconnection</b-dropdown-item>
+                    </b-dropdown>
+
+                    <b-modal :active.sync="modalMonCompte" has-modal-card>
+                        <mon-compte></mon-compte>
+                    </b-modal>
                 </div>
             </div>
         </header>
