@@ -40,7 +40,7 @@ export default {
 
 #fully{
     
-    background-image: url('../style/images/view1.jpg');
+    background-image: url('https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2Fview1.jpg?alt=media&token=9139dfcd-d642-487d-a390-1a89fadf6e71');
     background-size: cover;
     
 }

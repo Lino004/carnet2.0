@@ -4,7 +4,7 @@
             <div class="navbar">
                 <div class="container d-flex is-flex-mobile ">
                      <a class="site-logo"  href="index.html">
-                        <img src="../style/images/TRIP.png" alt="Homepage">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2FTRIP.png?alt=media&token=4e9771ae-c683-4e1c-b3c9-0814d28aadad" alt="Homepage">
                      </a>
                     
                     <div class="d-flex align-items-center text-white" id="compte">
