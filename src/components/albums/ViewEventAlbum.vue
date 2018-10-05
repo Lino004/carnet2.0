@@ -1,6 +1,6 @@
 <template>
     <div class="container" id="main">
-        <transition-group name="list" class="columns is-multiline" v-show="!view">
+       <transition-group name="list" class="columns is-multiline" v-show="!view">
             <div class="column is-one-third-desktop is-half-tablet" 
                 v-for="event in events" :key="event.id">
                 <div class="card">
@@ -11,23 +11,16 @@
                         <div class="card-content is-overlay is-clipped">
                             <div class="level is-flex-mobile">
                                 <div class="level-rigth">
-                                    <span class="tag is-info">
-                                        {{event.titre}} 
-                                    </span>
-                                </div>
-                                <div class="level-left" v-show="etatSelectCheckbox" >
-                                    <b-checkbox v-model="event.selectionner"
-                                        type="is-info">
-                                    </b-checkbox>
+                                    <a @click="voirPlus(event)">
+                                        <b-icon icon="eye-plus-outline" type="is-info" size="is-medium"></b-icon>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <footer class="card-footer">
-                        <a class="card-footer-item button is-info is-outlined" 
-                            @click="voirPlus(event)">Voir &nbsp;
-                            <b-icon icon="plus"></b-icon>
-                        </a>
+                        <span class="card-footer-item title is-5 is-outlined">{{event.titre}}
+                        </span>
                     </footer>
                 </div>
             </div>
@@ -176,6 +169,10 @@ export default {
 #over{
     height: 300px;
     overflow: auto;
+}
+#heart{
+    margin-top: 60%;
+    margin-right: 10px;
 }
 
 </style>

@@ -177,7 +177,6 @@ export default {
             album.actif = !album.actif
             console.log(album.actif)
             this.albumsDbRef.child(album.id).update({actif: album.actif})
-
         },
         alertError(message) {
             this.$toast.open({

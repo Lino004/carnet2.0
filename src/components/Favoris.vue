@@ -25,7 +25,7 @@
         <!-- Affichage de tout les événements -->
         <transition-group name="list" class="columns is-multiline" v-show="!view">
             <div class="column is-one-third-desktop is-half-tablet" 
-                v-for="event in events" :key="event.id">
+                v-for="event in eventFavoris" :key="event.id">
                 <div class="card">
                     <div class="card-image is-flex is-horizontal-center">
                         <figure>
@@ -34,9 +34,9 @@
                         <div class="card-content is-overlay is-clipped">
                             <div class="level is-flex-mobile">
                                 <div class="level-rigth">
-                                    <span class="tag is-info">
-                                        {{event.titre}} 
-                                    </span>
+                                    <a @click="voirPlus(event)">
+                                        <b-icon icon="eye-plus-outline" type="is-info" size="is-medium"></b-icon>
+                                    </a>
                                 </div>
                                 <div class="level-left" v-show="etatSelectCheckbox" >
                                     <b-checkbox v-model="event.selectionner"
@@ -47,10 +47,8 @@
                         </div>
                     </div>
                     <footer class="card-footer">
-                        <a class="card-footer-item button is-info is-outlined" 
-                            @click="voirPlus(event)">Voir &nbsp;
-                            <b-icon icon="plus"></b-icon>
-                        </a>
+                        <span class="card-footer-item title is-5 is-outlined">{{event.titre}}
+                        </span>
                     </footer>
                 </div>
             </div>
@@ -58,7 +56,7 @@
 
         <!-- Affichage de l'événement choisi -->
         <transition name="bounce">        
-            <div class="box" v-for="event in events" :key="event.id" v-show="view">
+            <div class="box" v-for="event in eventFavoris" :key="event.id" v-show="view">
                 <div class="tile is-ancestor">
                     <div class="tile is-parent">
                         <div class="tile is-child">
@@ -125,6 +123,9 @@ export default {
     computed: {
         eventsDbRef () {
             return db.ref('events/' + this.userId)
+        },
+        eventFavoris () {
+            return this.events.filter(ev => ev.favori === true)
         }
     },
     methods: {
@@ -143,7 +144,6 @@ export default {
                     this.etatOptionSelect = true
                 }
                 this.events.push({...snap.val(), id: snap.key})
-                this.events = this.events.filter( ev => ev.favori === true)
             })
         },
         listenerEventSupp () {
@@ -153,15 +153,17 @@ export default {
                 this.events.splice(index, 1)
             })
         },
+        listenerEventChange () {
+            this.eventsDbRef.on('child_changed', snap => {
+                console.log('events =',this.events)
+                const eventChanged = this.events.find(ev => ev.id === snap.key)
+                this.events.push({...snap.val(), id: snap.key})
+            })
+        },
         detachListenerEvent () {
             this.eventsDbRef.off()
         },
         supprimer (e) {
-            storage.ref().child(e.imageRef).delete().then(() => {
-                console.log('supp image success')
-            }).catch( (error) => {
-                console.log('erreur image :' + error.message)
-            })
             this.eventsDbRef.child(e.id).remove().then(() => {
                 console.log('supp data success')
             }).catch( (error) => {
@@ -213,6 +215,7 @@ export default {
     mounted () {
         this.listenerEventAdd()
         this.listenerEventSupp()
+        this.listenerEventChange()
         this.tempEvents = this.events
     },
     beforeDestroy () {

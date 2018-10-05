@@ -7,27 +7,25 @@
             <div class="level-left">
                 <a  v-show="etatSelectCheckbox" @click="supprimerPlusieursEvents()"><b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon></a>
                 <!--Bouton d'ajout d'un evenement-->
-                <a @click="fenetreModalActive = true">
-                        <b-icon icon="plus-circle" type="is-info" size="is-medium"></b-icon>
-                    </a>
+                <a @click="fenetreModalActive = true" v-show="!etatSelectCheckbox">
+                    <b-icon icon="plus-circle" type="is-info" size="is-medium"></b-icon>
+                </a>
             </div>
             
             <div class="level-right" >
-                <a  @click="selectionner()"
-                    v-show="!etatSelectCheckbox">
+                <a @click="selectionner()" v-show="!etatSelectCheckbox">
                     <b-icon icon="delete" type="is-info" size="is-medium"></b-icon>
                 </a>
                    
-                <a  @click="annulerSelection()" 
-                    v-show="etatSelectCheckbox">
+                <a @click="annulerSelection()" v-show="etatSelectCheckbox">
                     <b-icon icon="close-circle" type="is-info" size="is-medium"></b-icon>
                 </a>
             </div>
             
         </div>
         <b-modal :active.sync="fenetreModalActive" has-modal-card>
-                        <new-event></new-event>
-                    </b-modal> 
+            <new-event></new-event>
+        </b-modal> 
         <!-- Affichage de tout les événements -->
         <transition-group name="list" class="columns is-multiline" v-show="!view">
             <div class="column is-one-third-desktop is-half-tablet" 
@@ -36,18 +34,6 @@
                     <div class="card-image is-flex is-horizontal-center">
                         <figure>
                             <img class="img-view1" :src="event.imageUrl" alt="">
-                            <div class="level">
-                                <a class="level-right is-overlay is-clipped" 
-                                    id="heart" v-show="!event.favori"
-                                    @click="favoris(event)">
-                                    <b-icon icon="heart-outline" type="is-grey"></b-icon>
-                                </a>
-                                <a class="level-right is-overlay is-clipped"
-                                    id="heart" v-show="event.favori"
-                                    @click="favoris(event)">
-                                    <b-icon icon="heart" type="is-danger"></b-icon>
-                                </a>
-                            </div>
                         </figure>
                         <div class="card-content is-overlay is-clipped">
                             <div class="level is-flex-mobile">
@@ -60,6 +46,18 @@
                                     <b-checkbox v-model="event.selectionner"
                                         type="is-info">
                                     </b-checkbox>
+                                </div>
+                                <div class="level-right is-flex-mobile is-overlay" id="heart">
+                                    <div v-show="!event.favori">
+                                        <a @click.prevent="favoris(event)">
+                                            <b-icon icon="heart-outline" type="is-grey"></b-icon>
+                                        </a>
+                                    </div>
+                                    <div v-show="event.favori">
+                                        <a @click.prevent="favoris(event)">
+                                            <b-icon icon="heart" type="is-danger"></b-icon>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -170,19 +168,23 @@ export default {
                 this.events.splice(index, 1)
             })
         },
+        listenerEventChange () {
+            this.eventsDbRef.on('child_changed', snap => {
+                const eventChanged = this.events.find(ev => ev.id === snap.key)
+                const index = this.events.indexOf(eventChanged)
+                this.events.splice(index, 0, snap.val())
+                console.log('events =',events)
+            })
+        },
         favoris (event)  {
-            event.favoris = !event.favoris
+            console.log('oui ça clique')
+            event.favori = !event.favori
             this.eventsDbRef.child(event.id).update({favori: event.favori})
         },
         detachListenerEvent () {
             this.eventsDbRef.off()
         },
         supprimer (e) {
-            storage.ref().child(e.imageRef).delete().then(() => {
-                console.log('supp image success')
-            }).catch( (error) => {
-                console.log('erreur image :' + error.message)
-            })
             this.eventsDbRef.child(e.id).remove().then(() => {
                 console.log('supp data success')
             }).catch( (error) => {
@@ -234,6 +236,7 @@ export default {
     mounted () {
         this.listenerEventAdd()
         this.listenerEventSupp()
+        this.listenerEventChange()
         this.tempEvents = this.events
     },
     beforeDestroy () {
