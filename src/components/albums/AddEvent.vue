@@ -1,7 +1,7 @@
 <template>
     <div class="modal-card">
         <header class="modal-card-head">
-
+            <p class="modal-card-title">Ajouter des évenements</p>
         </header>
         <section class="modal-card-body">
             <div class="columns is-multiline">
@@ -57,8 +57,8 @@ export default {
         eventsDbRef () {
             return db.ref('events/' + this.userId)
         },
-        albumsDbRef () {
-            return db.ref('albums/' + this.userId)
+        eventsAlbumDbRef () {
+            return db.ref('eventsAlbums/' + this.album.id)
         }
     },
     methods: {
@@ -75,11 +75,11 @@ export default {
         },
         ajoutEvent () {
             var eventSelect = this.events.filter(ev => ev.selectionner === true)
-            for(var i = 0; i < eventSelect.length ; i++ ) {
-                this.albumsDbRef.child(this.album.id + '/events').push({...eventSelect[i]}).then( () => {
+            for(var i = 0; i < eventSelect.length; i++) {
+                this.eventsAlbumDbRef.push().set({...eventSelect[i]}).then(() => {
                     this.closeModal()
-                }).catch( error => {
-                    this.alertError(error.message)
+                }).catch(erro => {
+                    this.alertError(erro.message)
                 })
             }
         },

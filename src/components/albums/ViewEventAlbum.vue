@@ -1,35 +1,5 @@
 <template>
     <div class="container" id="main">
-
-         <div class="level" id='trash'>
-            
-            <div class="column is-8">
-                <div class="level-item" v-show="!etatSelectCheckbox">
-                    <a @click="fenetreModalActive = true">
-                        <b-icon icon="plus-circle" type="is-info" size="is-medium"></b-icon>
-                    </a>
-                    
-                </div>
-                <div class="level-item" v-show="!etatSelectCheckbox">
-                    <a @click="selectionner()">
-                        <b-icon icon="delete" type="is-info" size="is-medium"></b-icon>
-                    </a>
-                </div>
-                <div class="level-item" v-show="etatSelectCheckbox">
-                    <a @click="supprimerPlusieursEvents()">
-                        <b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon>
-                    </a>
-                    <a @click="annulerSelection()">
-                        <b-icon icon="close-circle" type="is-info" size="is-medium"></b-icon>
-                    </a>
-                </div>
-            </div>
-            
-        </div>
-        <b-modal :active.sync="fenetreModalActive" has-modal-card>
-                        <new-event></new-event>
-                    </b-modal> 
-        <!-- Affichage de tout les événements -->
         <transition-group name="list" class="columns is-multiline" v-show="!view">
             <div class="column is-one-third-desktop is-half-tablet" 
                 v-for="event in events" :key="event.id">
@@ -110,101 +80,36 @@
 </template>
 
 <script>
-import {db, storage, auth} from '../firebase'
-import ModifEvent from './ModifEvent'
-import  NewEvent from './NewEvent'
+import {db, storage, auth} from '../../firebase'
+import ModifEvent from '../ModifEvent'
+
 export default {
-    name: 'view-event',
-    components: {
-        ModifEvent,
-        NewEvent
-    },
+    name: "view-event-album",
+    components: { ModifEvent },
     data () {
         return {
-            userId: auth.currentUser.uid, // Récupère Id de l'utilisateur
-            events: [], // Tableau receptionnant les informations sur les évenements
+            userId: auth.currentUser.uid,
+            events: [],
             view: false, // Variable d'état des diffirents mode d'affichage
             tempEvents: [], // Variable temporaire
-            etatSelectCheckbox: false, // Variable d'état des checkbox
+            etatSelectCheckbox: false,
             etatOptionSelect: true, // Variable d'état de partie selection
-            fenetreModalEdition: false,
-            fenetreModalActive: false
+            fenetreModalEdition: false
         }
     },
+    props: ['album'],
     computed: {
-        eventsDbRef () {
-            return db.ref('events/' + this.userId)
+        eventsAlbumDbRef () {
+            return db.ref('eventsAlbums/' + this.album.id)
         }
     },
     methods: {
-        selectionner () {
-            this.etatSelectCheckbox = true
-        },
-        annulerSelection () {
-            this.etatSelectCheckbox = false
-            this.events.forEach((ev) => {
-                ev.selectionner = false
-            })
-        },
-        listenerEventAdd () {
-            this.eventsDbRef.on('child_added', snap => {
-                if ( snap.val !== null) {
-                    this.etatOptionSelect = true
-                }
-                this.events.push({...snap.val(), id: snap.key})
-            })
-        },
-        listenerEventSupp () {
-            this.eventsDbRef.on('child_removed', snap => {
-                const deleteEvent = this.events.find(ev => ev.id === snap.key)
-                const index = this.events.indexOf(deleteEvent)
-                this.events.splice(index, 1)
-            })
-        },
         detachListenerEvent () {
-            this.eventsDbRef.off()
+            this.eventsAlbumDbRef.off()
         },
-        supprimer (e) {
-            storage.ref().child(e.imageRef).delete().then(() => {
-                console.log('supp image success')
-            }).catch( (error) => {
-                console.log('erreur image :' + error.message)
-            })
-            this.eventsDbRef.child(e.id).remove().then(() => {
-                console.log('supp data success')
-            }).catch( (error) => {
-                console.log('erreur data :' + error.message)
-            })
-        },
-        miseAJourEvent () {
-            this.events.forEach((ev) => {
-                this.eventsDbRef.child(ev.id).update({...ev})
-            })
-        },
-        supprimerPlusieursEvents () {
-            this.$dialog.confirm({
-                title: 'Confirmation',
-                message: 'Êtes-vous sûr de vouloir continuer ?',
-                cancelText: 'Non',
-                confimText: 'Oui',
-                type: 'is-danger',
-                hasIcon: true,
-                onConfirm: () => {
-                    this.miseAJourEvent()
-                    let e = this.events.filter(ev => ev.selectionner === true)
-                    e.forEach((ev) => {
-                        this.supprimer(ev)
-                    })
-                    this.etatSelectCheckbox = false
-                }, 
-                onCancel: () => {
-                    this.events.forEach((ev) => {
-                        ev.selectionner = false
-                    })
-                    this.$toast.open({
-                        message: 'Suppression annulée'
-                    })
-                }
+        listenerEvents () {
+            this.eventsAlbumDbRef.on('child_added', snap => {
+                this.events.push({...snap.val(), id: snap.key})
             })
         },
         voirPlus (e) {
@@ -219,8 +124,7 @@ export default {
         }
     },
     mounted () {
-        this.listenerEventAdd()
-        this.listenerEventSupp()
+        this.listenerEvents()
         this.tempEvents = this.events
     },
     beforeDestroy () {
@@ -241,7 +145,6 @@ export default {
     z-index: 1;
     left:10px;
 }
-
 .bounce-enter-active {
   animation: bounce-in .5s;
 }
@@ -274,4 +177,5 @@ export default {
     height: 300px;
     overflow: auto;
 }
+
 </style>

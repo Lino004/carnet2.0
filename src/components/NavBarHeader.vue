@@ -2,13 +2,13 @@
     <div>
         <header>
             <div class="navbar">
-                <div class="container d-flex justify-content-between">
+                <div class="container d-flex is-flex-mobile ">
                      <a class="site-logo"  href="index.html">
                         <img src="../style/images/TRIP.png" alt="Homepage">
                      </a>
                     
                     <div class="d-flex align-items-center text-white" id="compte">
-                        <span class="navbar-brand align-items-center"> {{currentUser.displayName}} </span>
+                        <span class="navbar-brand align-items-center"> {{user.displayName}} </span>
                         
                         <b-dropdown hoverable>
                             <b-icon icon="account-circle" 
@@ -17,13 +17,12 @@
                             slot="trigger"></b-icon>
 
                             <b-dropdown-item @click="modalMonCompte = true">Mon compte</b-dropdown-item>
-
-                            <b-modal :active.sync="modalMonCompte" has-modal-card>
-                                <mon-compte></mon-compte>
-                            </b-modal>
-
                             <b-dropdown-item @click="deconnecter()">Déconnection</b-dropdown-item>
+                            
                         </b-dropdown>
+                        <b-modal :active.sync="modalMonCompte" has-modal-card>
+                            <mon-compte></mon-compte>
+                        </b-modal>
                     </div>
                 </div>
             </div>
@@ -34,7 +33,6 @@
 </template>
 <script>
     import { auth } from '../firebase'
-    import { mapGetters } from 'vuex'
     import NewEvent from './NewEvent'
     import MonCompte from './MonCompte'
     
@@ -52,7 +50,9 @@
             }
         },
         computed: {
-            ...mapGetters(['currentUser'])
+            user () {
+                return auth.currentUser
+            }
         },
         methods: {
             goToAccueil () {
@@ -76,15 +76,16 @@
 .site-logo{
 width: 60px;
 height: 60px;
-margin-bottom:10px;
-margin-top: -10px;
+
 margin-left:-100px;
 }
 .navbar{
-    background-image: linear-gradient(to bottom,#3e0aa9,#5128a6)
+    background-image: linear-gradient(to bottom,#3e0aa9,#5128a6);
+    margin-bottom: 20px;
 }
 #compte{
    margin-right:-40px; 
+   
 }
 </style>
 
