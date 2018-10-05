@@ -171,7 +171,7 @@ export default {
   transform: translateY(30px);
 }
 #over{
-    height: 300px;
+    height: auto;
     overflow: auto;
 }
 #heart{
