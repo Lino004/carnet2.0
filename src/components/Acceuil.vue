@@ -24,7 +24,7 @@
 
 <script>
 import {db, auth} from '../firebase'
-import ViewEvent from './ViewEvent'
+import ViewEvent from './viewEvent/ViewEvent'
 import Favoris from './Favoris'
 import NavBarHeader from './NavBarHeader'
 import Album from './albums/Album'

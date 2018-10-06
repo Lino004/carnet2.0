@@ -9,16 +9,20 @@
                 </div>
                 <div class="navbar-end d-flex align-items-center text-white">
                     <span class="navbar-brand align-items-center"> {{user.displayName}} </span>
-                    
-                    <b-dropdown hoverable>
-                        <b-icon icon="account-circle" 
-                            type="is-white" 
-                            size="is-medium" 
-                            slot="trigger"></b-icon>
 
-                        <b-dropdown-item @click="modalMonCompte = true">Mon compte</b-dropdown-item>
-                        <b-dropdown-item @click="deconnecter()">Déconnection</b-dropdown-item>
-                    </b-dropdown>
+                    <div class="dropdown dropleft">
+                        <div id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <b-icon icon="account-circle" 
+                                type="is-white" 
+                                size="is-medium" 
+                                slot="trigger">
+                            </b-icon>
+                        </div>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" @click="modalMonCompte = true">Mon compte</a>
+                            <a class="dropdown-item" @click="deconnecter()">Déconnection</a>
+                        </div>
+                    </div>
 
                     <b-modal :active.sync="modalMonCompte" has-modal-card>
                         <mon-compte></mon-compte>
@@ -32,13 +36,11 @@
 </template>
 <script>
     import { auth } from '../firebase'
-    import NewEvent from './NewEvent'
     import MonCompte from './MonCompte'
     
     export default {
         name: 'nav-bar-header',
         components: {
-            NewEvent,
             MonCompte
         },
         data () {

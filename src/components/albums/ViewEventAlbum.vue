@@ -12,7 +12,7 @@
                             <div class="level is-flex-mobile">
                                 <div class="level-rigth">
                                     <a @click="voirPlus(event)">
-                                        <b-icon icon="eye-plus-outline" type="is-info" size=""></b-icon>
+                                        <b-icon icon="eye-plus-outline" type="is-info"></b-icon>
                                     </a>
                                 </div>
                                 <div class="level-left" v-show="etatSelectCheckbox">
@@ -27,71 +27,33 @@
                         <span class="card-footer-item title is-5 is-outlined">{{event.titre}}</span>
                     </footer>
                 </div>
-            </div>
-        </transition-group>
 
-        <!-- Affichage de l'événement choisi -->
-        <transition name="bounce">        
-            <div class="box" v-for="event in events" :key="event.id" v-show="view">
-                <div class="tile is-ancestor">
-                    <div class="tile is-parent">
-                        <div class="tile is-child">
-                            <img :src="event.imageUrl" alt="">
-                        </div>
-                    </div>
-                    <div class="tile is-4 is-vertical is-parent">
-                        <div class="tile is-parent is-vertical box">
-                            <div class="tile is-child">
-                                <p class="title">{{event.titre}}</p>
-                                <div id="over">
-                                    <p> {{event.recit}} </p>
-                                </div>
-                            </div>
-                            <div class="tile is-child">
-                                <span class="tag is-white">Le {{event.date}} à {{event.lieu}}</span>
-                            </div>
-                        </div>
-                        <div class="tile is-parent">
-                            <div class="tile is-child">
-                                <a class="card-footer-item button is-info is-outlined" 
-                                    @click="voirMoins()">Voir &nbsp;
-                                    <b-icon icon="window-minimize"></b-icon>
-                                </a>
-                            </div>
-                            <div class="tile is-child">
-                                <a class="card-footer-item button is-info is-outlined" 
-                                    @click="fenetreModalEdition = true">Editer
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modification de l'Événement -->
-                <b-modal :active.sync="fenetreModalEdition" has-modal-card>
-                    <modif-event :event="event" ></modif-event>
+                <!-- Affichage de l'événement choisi -->
+                <b-modal :active.sync="isImageModalActive" has-modal-card>
+                    <apercu :event="eventActu" :eventsDbRef="eventsAlbumDbRef"></apercu>
                 </b-modal>
             </div>
-        </transition>
+        </transition-group>
     </div>
 </template>
 
 <script>
 import {db, storage, auth} from '../../firebase'
-import ModifEvent from '../ModifEvent'
+import Apercu from '../viewEvent/Apercu'
 
 export default {
     name: "view-event-album",
-    components: { ModifEvent },
+    components: { Apercu },
     data () {
         return {
             userId: auth.currentUser.uid,
             events: [],
             view: false, // Variable d'état des diffirents mode d'affichage
-            tempEvents: [], // Variable temporaire
             etatSelectCheckbox: false,
             etatOptionSelect: true, // Variable d'état de partie selection
-            fenetreModalEdition: false
+            fenetreModalEdition: false,
+            isImageModalActive: false,
+            eventActu: []
         }
     },
     props: ['album'],
@@ -110,19 +72,12 @@ export default {
             })
         },
         voirPlus (e) {
-            this.etatOptionSelect = false
-            this.view = !this.view
-            this.events = this.events.filter(ev => ev.id === e.id)
-        },
-        voirMoins () {
-            this.etatOptionSelect = true
-            this.view = !this.view
-            this.events = this.tempEvents
+            this.isImageModalActive = true
+            this.eventActu = e
         }
     },
     mounted () {
         this.listenerEvents()
-        this.tempEvents = this.events
     },
     beforeDestroy () {
         this.detachListenerEvent()
@@ -142,23 +97,6 @@ export default {
     z-index: 1;
     left:10px;
 }
-.bounce-enter-active {
-  animation: bounce-in .5s;
-}
-.bounce-leave-active {
-  animation: bounce-in .5s reverse;
-}
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.5);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
 .list-item {
   display: inline-block;
   margin-right: 10px;
@@ -170,13 +108,4 @@ export default {
   opacity: 0;
   transform: translateY(30px);
 }
-#over{
-    height: auto;
-    overflow: auto;
-}
-#heart{
-    margin-top: 60%;
-    margin-right: 10px;
-}
-
 </style>

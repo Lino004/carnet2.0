@@ -6,7 +6,7 @@
                     Quelle est votre prochaine destination?
                 </h1>
                 <h2 class="subtitle has-text-centered is-4 has-text-white">
-                    Gargez vos meilleurs souvenirs ici.
+                    Gardez vos meilleurs souvenirs ici.
                 </h2>
                 <div class=" has-text-centered">
                     <a class="button is-rounded is-centered is-white is-outlined is-medium" @click="fenetreModalActive = true">Ajouter</a>

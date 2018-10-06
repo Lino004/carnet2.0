@@ -36,7 +36,7 @@
         </b-modal>
 
         <div v-for="album in albums" :key="album.id" class="shadow p-3 mb-5 bg-white rounded">
-            <div class="">
+            
                 <div class="level is-flex-mobile">
                     <div class="level-left">
                         <h4 class="title is-4 has-text-info">{{album.name}}</h4>
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            
             <div>
                 <view-event-album :album="album" v-show="album.actif"></view-event-album>
             </div>
