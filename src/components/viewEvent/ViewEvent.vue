@@ -121,7 +121,7 @@ export default {
                 if ( snap.val !== null) {
                     this.etatOptionSelect = true
                 }
-                this.events.push({...snap.val(), id: snap.key})
+                this.events.push({...snap.val()})
             })
         },
         listenerEventSupp () {

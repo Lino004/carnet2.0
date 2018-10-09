@@ -28,14 +28,6 @@
                 <b-input v-model="newEven.lieu"></b-input>
             </b-field>
 
-            <b-field label="Selectionnez une date">
-                <b-input type="date" v-model="newEven.date"
-                    placeholder="Cliqueez pour selectionner..."
-                    icon="calendar-today"
-                    :readonly="false">
-                </b-input>
-            </b-field>
-
             <b-field label="Message">
                 <b-input type="textarea" 
                     v-model="newEven.recit"></b-input>
@@ -73,6 +65,8 @@
 <script>
 import {db, storage, auth} from '../firebase'
 
+const date = new Date()
+
 export default {
     name: 'new-event',
     data () {
@@ -84,7 +78,8 @@ export default {
             newEven: {
                 titre: '',
                 lieu: '',
-                date: '',
+                date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear(),
+                moment: date.getHours() + 'h ' + date.getMinutes() + 'min',
                 recit: '',
                 imageUrl: null,
                 imageRef: null,
@@ -123,7 +118,8 @@ export default {
     },
     methods: {
         add () {
-            this.eventsDbRef.push().set({...this.newEven}).then( () =>{
+            let key = this.eventsDbRef.push().key
+            this.eventsDbRef.child(key).update({...this.newEven, id: key}).then( () =>{
                 this.files = []
                 this.newEven.titre = ''
                 this.newEven.lieu = ''

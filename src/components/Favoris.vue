@@ -111,7 +111,7 @@ export default {
         },
         listenerEventAdd () {
             this.eventsDbRef.on('child_added', snap => {
-                this.tempEvents.push({...snap.val(), id: snap.key})
+                this.tempEvents.push({...snap.val()})
                 this.events = this.tempEvents.filter(ev => ev.favori === true)
             })
         },
@@ -126,7 +126,7 @@ export default {
             this.eventsDbRef.on('child_changed', snap => {
                 console.log('valBoolFavo = ' + snap.val().favori)
                 if (snap.val().favori){
-                    this.events.push({...snap.val(), id: snap.key})
+                    this.events.push({...snap.val()})
                 }else{
                     const deleteEvent = this.events.find(ev => ev.id === snap.key)
                     const index = this.events.indexOf(deleteEvent)
