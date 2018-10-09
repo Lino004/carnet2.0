@@ -58,7 +58,7 @@ export default {
             return db.ref('events/' + this.userId)
         },
         eventsAlbumDbRef () {
-            return db.ref('eventsAlbums/' + this.album.id)
+            return db.ref('eventsAlbums/' + this.userId + '/' + this.album.id)
         }
     },
     methods: {
@@ -76,11 +76,13 @@ export default {
         ajoutEvent () {
             var eventSelect = this.events.filter(ev => ev.selectionner === true)
             for(var i = 0; i < eventSelect.length; i++) {
-                this.eventsAlbumDbRef.push().set({...eventSelect[i]}).then(() => {
+                let key = this.eventsAlbumDbRef.push().key
+                this.eventsAlbumDbRef.child(key).update({...eventSelect[i], key: key}).then(() => {
                     this.closeModal()
                 }).catch(erro => {
                     this.alertError(erro.message)
                 })
+                this.eventsDbRef.child(eventSelect[i].id).update({refAlbum: this.album.id + '/' + key})
             }
         },
         alertError(message) {

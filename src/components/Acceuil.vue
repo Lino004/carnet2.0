@@ -1,8 +1,8 @@
 <template>
     <div>
         <nav-bar-header></nav-bar-header>
-        <background-initial v-show="!etat"></background-initial>
-        <main id="main" role="main" v-show="etat">
+        <background-initial v-show="!eventsExist"></background-initial>
+        <main v-show="eventsExist">
           <b-tabs type="is-boxed is-centered" v-model="menuActif">
 
               <b-tab-item label="Accueil" icon="google-photos">
@@ -42,27 +42,54 @@ export default {
   data () {
     return {
       menuActif: 0,
-      condition: true,
-      etat: false,
-      userId: auth.currentUser.uid
+      userId: auth.currentUser.uid,
+      events: []
     }
   },
   computed: {
       eventsDbRef () {
           return db.ref('events/' + this.userId)
+      },
+      eventsExist () {
+          if (this.events.length > 0) {
+              return true
+          }else{
+              return false
+          }
       }
   },
   methods: {
     listenerEventAdd () {
         this.eventsDbRef.on('child_added', snap => {
-            if ( snap.val !== null) {
-                this.etat = true
-            }
+            this.events.push({...snap.val()})
         })
     },
+    listenerEventSupp () {
+        this.eventsDbRef.on('child_removed', snap => {
+            const deleteEvent = this.events.find(ev => ev.id === snap.key)
+            const index = this.events.indexOf(deleteEvent)
+            this.events.splice(index, 1)
+        })
+    },
+    listenerEventChange () {
+        this.eventsDbRef.on('child_changed', snap => {
+            const deleteEvent = this.events.find(ev => ev.id === snap.key)
+            const index = this.events.indexOf(deleteEvent)
+            this.events.splice(index, 1)
+            this.events.splice(index, 0, {...snap.val()})
+        })
+    },
+    detachListenerEvent () {
+        this.eventsDbRef.off()
+    }
   },
   mounted () {
     this.listenerEventAdd()
+    this.listenerEventSupp()
+    this.listenerEventChange()
+  },
+  beforeDestroy () {
+    this.detachListenerEvent()
   }
 }
 </script>

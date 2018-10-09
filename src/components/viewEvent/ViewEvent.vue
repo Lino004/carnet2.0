@@ -3,16 +3,19 @@
 
         <!-- Option de suppression d'un événement -->
     
-        <div class="level column" id='trash' v-show="etatOptionSelect">
+        <div class="level column" id='trash' >
             <div class="level-left">
-                <a  v-show="etatSelectCheckbox" @click="supprimerPlusieursEvents()"><b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon></a>
                 <!--Bouton d'ajout d'un evenement-->
                 <a @click="fenetreModalActive = true" v-show="!etatSelectCheckbox">
                     <b-icon icon="plus-circle" type="is-info" size="is-medium"></b-icon>
                 </a>
             </div>
             
-            <div class="level-right" >
+            <div class="level-right" v-show="eventsExist">
+                <a  v-show="etatSelectCheckbox" @click="supprimerPlusieursEvents()">
+                    <b-icon icon="check-circle" type="is-info" size="is-medium"></b-icon>
+                </a>
+
                 <a @click="selectionner()" v-show="!etatSelectCheckbox">
                     <b-icon icon="delete" type="is-info" size="is-medium"></b-icon>
                 </a>
@@ -94,7 +97,6 @@ export default {
             events: [], // Tableau receptionnant les informations sur les évenements
             view: false, // Variable d'état des diffirents mode d'affichage
             etatSelectCheckbox: false, // Variable d'état des checkbox
-            etatOptionSelect: true, // Variable d'état de partie selection
             fenetreModalEdition: false,
             fenetreModalActive: false,
             isImageModalActive: false,
@@ -104,6 +106,16 @@ export default {
     computed: {
         eventsDbRef () {
             return db.ref('events/' + this.userId)
+        },
+        eventsExist () {
+            if (this.events.length > 0) {
+                return true
+            }else{
+                return false
+            }
+        },
+        eventsAlbumDbRef () {
+            return db.ref('eventsAlbums/' + this.userId)
         }
     },
     methods: {
@@ -118,9 +130,6 @@ export default {
         },
         listenerEventAdd () {
             this.eventsDbRef.on('child_added', snap => {
-                if ( snap.val !== null) {
-                    this.etatOptionSelect = true
-                }
                 this.events.push({...snap.val()})
             })
         },
@@ -139,19 +148,25 @@ export default {
                 this.events.splice(index, 0, {...snap.val()})
             })
         },
+        detachListenerEvent () {
+            this.eventsDbRef.off()
+        },
         favoris (event)  {
             event.favori = !event.favori
             this.eventsDbRef.child(event.id).update({favori: event.favori})
         },
-        detachListenerEvent () {
-            this.eventsDbRef.off()
-        },
         supprimer (e) {
-            this.eventsDbRef.child(e.id).remove().then(() => {
-                console.log('supp data success')
-            }).catch( (error) => {
-                console.log('erreur data :' + error.message)
+            storage.ref(e.imageRef).delete().catch( (error) => {
+                this.alertError(error.message)
             })
+            this.eventsDbRef.child(e.id).remove().catch( (error) => {
+                this.alertError(error.message)
+            })
+            if (e.refAlbum !== undefined){
+                this.eventsAlbumDbRef.child(e.refAlbum).remove().catch( (error) => {
+                    this.alertError(error.message)
+                })
+            }
         },
         miseAJourEvent () {
             this.events.forEach((ev) => {
@@ -187,6 +202,13 @@ export default {
         voirPlus (e) {
             this.isImageModalActive = true
             this.eventActu = e
+        },
+        alertError(message) {
+            this.$toast.open({
+                message: message,
+                position: 'is-bottom',
+                type: 'is-danger'
+            })
         }
     },
     mounted () {

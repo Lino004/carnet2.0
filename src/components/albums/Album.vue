@@ -128,29 +128,23 @@ export default {
             })
         },
         supprimerEventsAlbum (album) {
-            var eventsAlbumDbRef = db.ref('eventsAlbums/' + album.id)
+            var eventsAlbumDbRef = db.ref('eventsAlbums/' + this.userId + '/' + album.id)
             var events
             eventsAlbumDbRef.on('child_added', snap => {
                 events.push({...snap.val(), id: snap.key})
                 events.forEach( (ev) =>{
-                    storage.ref().child(e.imageRef).delete().then(() => {
-                        console.log('supp image success')
-                    }).catch( (error) => {
+                    storage.ref().child(e.imageRef).delete().catch( (error) => {
                         this.alertError(error.message)
                     })
                 })
             })
-            eventsAlbumDbRef.remove().then(() => {
-                console.log('supp data success')
-            }).catch( (error) => {
+            eventsAlbumDbRef.remove().catch( (error) => {
                 this.alertError(error.message)
             })
         },
         supprimerAlbum (album) {
             this.supprimerEventsAlbum(album)
-            this.albumsDbRef.child(album.id).remove().then(() => {
-                console.log('supp data success')
-            }).catch( (error) => {
+            this.albumsDbRef.child(album.id).remove().catch( (error) => {
                 this.alertError(error.message)
             })
         },
@@ -175,7 +169,6 @@ export default {
         },
         actifAlbum (album) {
             album.actif = !album.actif
-            console.log(album.actif)
             this.albumsDbRef.child(album.id).update({actif: album.actif})
         },
         alertError(message) {

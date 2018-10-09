@@ -1,5 +1,6 @@
 <template>
     <div class="container" id="main">
+        
        <transition-group name="list" class="columns is-multiline" v-show="!view">
             <div class="column is-one-fifth-desktop is-half-tablet is-mobile" 
                 v-for="event in events" :key="event.id">
@@ -50,26 +51,49 @@ export default {
             events: [],
             view: false, // Variable d'état des diffirents mode d'affichage
             etatSelectCheckbox: false,
-            etatOptionSelect: true, // Variable d'état de partie selection
             fenetreModalEdition: false,
             isImageModalActive: false,
-            eventActu: []
+            eventActu: [],
+            test: []
         }
     },
     props: ['album'],
     computed: {
         eventsAlbumDbRef () {
-            return db.ref('eventsAlbums/' + this.album.id)
+            return db.ref('eventsAlbums/' + this.userId + '/' + this.album.id)
         }
     },
     methods: {
+        listenerEventAdd () {
+            this.eventsAlbumDbRef.on('child_added', snap => {
+                this.events.push({...snap.val()})
+            })
+        },
+        listenerEventSupp () {
+            this.eventsAlbumDbRef.on('child_removed', snap => {
+                const deleteEvent = this.events.find(ev => ev.id === snap.key)
+                const index = this.events.indexOf(deleteEvent)
+                this.events.splice(index, 1)
+            })
+        },
+        listenerEventChange () {
+            this.eventsAlbumDbRef.on('child_changed', snap => {
+                const detectEvent = this.events.find(ev => ev.id === snap.key)
+                const index = this.events.indexOf(detectEvent)
+                this.events.splice(index, 1)
+                this.events.splice(index, 0, {...snap.val()})
+            })
+        },
         detachListenerEvent () {
             this.eventsAlbumDbRef.off()
         },
-        listenerEvents () {
-            this.eventsAlbumDbRef.on('child_added', snap => {
-                this.events.push({...snap.val(), id: snap.key})
-            })
+        testExiste (t) {
+            let al = t.albums
+            console.log('al = ' + al)
+        },
+        testT () {
+            let existe = this.test.some(this.testExiste())
+            console.log('exi = ', existe)
         },
         voirPlus (e) {
             this.isImageModalActive = true
@@ -77,7 +101,9 @@ export default {
         }
     },
     mounted () {
-        this.listenerEvents()
+        this.listenerEventAdd()
+        this.listenerEventSupp()
+        this.listenerEventChange()
     },
     beforeDestroy () {
         this.detachListenerEvent()

@@ -129,7 +129,7 @@ export default {
                 this.closeAddModal()
             }).catch( erreur =>{
                 this.isLoading = false
-                alert(erreur.message)
+                this.alertError(erreur.message)
             })
         },
         upload (file) {
@@ -139,6 +139,13 @@ export default {
         },
         closeAddModal () {
             this.$parent.close()
+        },
+        alertError(message) {
+            this.$toast.open({
+                message: message,
+                position: 'is-bottom',
+                type: 'is-danger'
+            })
         }
     },
     watch: {
