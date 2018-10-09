@@ -12,7 +12,7 @@
                 <div class="columns is-mobile is-centered">
                   <b-upload v-model="file" accept="image/jpeg" @input="upload(file[0])" :loading="isLoading">
                     <figure class="is-centered image is-128x128">
-                      <img class="" :src="user.photoURL">
+                      <img class="" :src="tempImage">
                     </figure>
                   </b-upload>
                 </div>
@@ -83,7 +83,8 @@
         file: [],
         password: '',
         uploadTask: null,
-        isLoading: false
+        isLoading: false,
+        tempImage: ''
       }
     },
     computed: {
@@ -118,6 +119,7 @@
       },
       updateImage (imageUrl){
         this.isLoading = false
+        this.tempImage = imageUrl
         this.user.updateProfile({photoURL: imageUrl})
       },
       updateEmail () {
@@ -153,6 +155,9 @@
               type: 'is-danger'
           })
       }
+    },
+    mounted () {
+      this.tempImage = this.user.photoURL
     }
   }
 </script>
