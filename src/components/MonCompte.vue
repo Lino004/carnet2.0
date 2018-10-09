@@ -10,20 +10,9 @@
         <div class="tile is-parent">
             <div class="tile is-child">
                 <div class="columns is-mobile is-centered">
-                  <b-upload v-model="file">
-                    <div v-if="file.length" >
-                      <button class="button is-info" 
-                          type="button"
-                          :class="{'is-loading': isLoading}"
-                          @click="upload(file[0])">Mettre à jour
-                      </button>
-                      <button class="button" 
-                        type="button" 
-                        @click="file = []">Annuler
-                      </button>
-                    </div>
-                    <figure v-else class="is-centered is-half image is-128x128">
-                      <img class="is-rounded" :src="user.photoURL">
+                  <b-upload v-model="file" accept="image/jpeg" @input="upload(file[0])" :loading="isLoading">
+                    <figure class="is-centered image is-128x128">
+                      <img class="" :src="user.photoURL">
                     </figure>
                   </b-upload>
                 </div>
@@ -106,7 +95,19 @@
       upload (file) {
         this.isLoading = true
         console.log('en cours uploadImage')
-        this.uploadTask = storage.ref(this.user.uid + '/profile/' + file.name).put(file)
+        var uploadTask = storage.ref(this.user.uid + '/profile/' + file.name).put(file)
+        uploadTask.on('state_changed', snapshot => {
+          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          console.log('progress is ' + progress + '% done')
+        },
+        null,
+        () => {
+          uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+            this.$emit('url', downloadURL)
+            console.log(downloadURL)
+            this.updateImage(downloadURL)
+          })
+        })
       },
       updateProfile () {
         this.user.updateProfile({
@@ -116,12 +117,8 @@
         })
       },
       updateImage (imageUrl){
-        this.user.updateProfile({
-          photoURL: imageUrl
-        }).then(function() {
-          console.log('success uploadImage')
-          this.file = null
-        })
+        this.isLoading = false
+        this.user.updateProfile({photoURL: imageUrl})
       },
       updateEmail () {
         this.user.updateEmail(this.user.email).then(function() {
@@ -155,22 +152,6 @@
               position: 'is-bottom',
               type: 'is-danger'
           })
-      }
-    },
-    watch: {
-      uploadTask: function () {
-        this.uploadTask.on('state_changed', snapshot => {
-          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          console.log('progress is ' + progress + '% done')
-        },
-        null,
-        () => {
-          this.uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-            this.$emit('url', downloadURL)
-            console.log(downloadURL)
-            this.updateImage(downloadURL)
-          })
-        })
       }
     }
   }
