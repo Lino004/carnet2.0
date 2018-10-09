@@ -25,7 +25,7 @@
         <!-- Affichage de tout les événements -->
         <transition-group name="list" class="columns is-multiline" v-show="!view">
             <div class="column is-one-fifth-desktop is-half-tablet is-mobile" 
-                v-for="event in events" :key="event.id">
+                v-for="(event, index) in events" :key="index">
                 <div class="card">
                     <div class="card-image is-flex is-horizontal-center">
                         <figure>
@@ -125,12 +125,22 @@ export default {
         listenerEventChange () {
             this.eventsDbRef.on('child_changed', snap => {
                 console.log('valBoolFavo = ' + snap.val().favori)
-                if (snap.val().favori){
-                    this.events.push({...snap.val()})
+                const existe = this.events.some(ev => ev.id === snap.key )
+                if (existe){
+                    if (snap.val().favori){
+                        const detectEvent = this.events.find(ev => ev.id === snap.key)
+                        const index = this.events.indexOf(detectEvent)
+                        this.events.splice(index, 1)
+                        this.events.splice(index, 0, {...snap.val()})
+                    }else{
+                        const deleteEvent = this.events.find(ev => ev.id === snap.key)
+                        const index = this.events.indexOf(deleteEvent)
+                        this.events.splice(index, 1)
+                    }
                 }else{
-                    const deleteEvent = this.events.find(ev => ev.id === snap.key)
-                    const index = this.events.indexOf(deleteEvent)
-                    this.events.splice(index, 1)
+                    if (snap.val().favori){
+                        this.events.push({...snap.val()})
+                    }
                 }
             })
         },

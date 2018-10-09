@@ -4,19 +4,6 @@
             <p class="modal-card-title">Modification de l'Événement</p>
         </header>
         <section class="modal-card-body">
-            
-            <b-field class="file">
-                <b-upload v-model="files">
-                    <a class="button is-info">
-                        <b-icon icon="upload"></b-icon>
-                        <span>Selectioner Image</span>
-                    </a>
-                </b-upload>
-                <span class="file-name"
-                    v-if="files && files.length">
-                    {{ files[0].name }}
-                </span>
-            </b-field>
 
             <b-field label="Titre">
                 <b-input v-model="event.titre"></b-input>
