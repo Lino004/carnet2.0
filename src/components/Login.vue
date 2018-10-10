@@ -5,26 +5,37 @@
                 <form class="login100-form validate-form">
                     <span class="login100-form-title p-b-49">Login</span>
                     <div>
-                        <div class="validate-input m-b-23" v-bind:class="{'alert alert-danger': etatEmail}">
-                            <label for="">Entrez votre Email</label>
-                            <input class="form-control" type="text" placeholder="Email" v-model="user.email" >
-                        </div>
-                        <div class="validate-input" v-bind:class="{'alert alert-danger': etatPass}">
-                            <label for="">Entrez votre Mot de passe</label>
-                            <input class="form-control" type="password" placeholder="Mot de passe" v-model="user.password">
-                        </div>
+                        <!-- Email -->
+                        <b-field label="Entrez votre Email"
+                            :type="email.type"
+                            :message="email.message">
+                            <b-input type="email"
+                                v-model="email.valeur"
+                                placeholder="email"
+                                @input="emailValide()">
+                            </b-input>
+                        </b-field>
+
+                        <!-- Mot de passe -->
+                        <b-field label="Entrez votre Mot de passe"
+                            :type="password.type"
+                            :message="password.message">
+                            <b-input type="password"
+                                v-model="password.valeur"
+                                placeholder="Mot de passe"
+                                password-reveal
+                                @input="passwordValide()">
+                            </b-input>
+                        </b-field>
+                        
                         <div class="text-right p-t-8 p-b-31">
                             <a href="#">Mots de passe oublié?</a>
                         </div>
-                        <div class="alert alert-danger" v-show="etatPass" >
-                            <strong>Erreur!</strong> {{erreur}}
-                        </div>
-                        <div class="container-login100-form-btn">
-                            <div class="wrap-login100-form-btn">
-                                <div class="login100-form-bgbtn"></div>
-                                <button class="login100-form-btn" @click.prevent="verifier"><i :class="{'fa fa-spinner fa-spin': isLoading}"> </i>Connecter</button>
-                            </div>
-                        </div>
+                        <button class="button is-block is-info is-large is-fullwidth is-rounded"
+                          :class="{'is-loading': isLoading}"
+                          @click.prevent="verifier()">
+                          Inscription
+                        </button>
                     </div>
                     <div class="txt1 text-center p-t-54 p-b-20">
                         <p>Vous n'avez pas de compte? <router-link to="/inscription"> <strong class="text-primary">Inscrivez vous ici</strong> </router-link> </p>
@@ -49,48 +60,82 @@ export default {
   name: 'login',
   data () {
     return {
-      user: {
-        email: '',
-        password: ''
-      },
-      etatEmail: null,
-      etatPass: null,
-      erreur: '',
+        email: {
+            valeur: '',
+            type: '',
+            message: ''
+        },
+        password: {
+            valeur: '',
+            type: '',
+            message: ''
+        },
       isLoading: false
     }
   },
   methods: {
+    emailValide () {
+        var regex = /^[a-zA-Z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/
+        if (regex.test(this.email.valeur)) {
+            this.email.type = 'is-success'
+            this.email.message = 'Email valide'
+            return true
+        }else{
+            this.email.type = 'is-danger'
+            this.email.message = 'Email invalide'
+            return false
+        }
+    },
+    passwordValide () {
+        if (this.password.valeur.length > 8) {
+            this.password.type = 'is-success'
+            this.password.message = 'Mot de passe valide'
+            return true
+        }else{
+            this.password.type = 'is-danger'
+            this.password.message = 'Le mot de passe doit être supérieur à 8 caractères'
+            return false
+        }
+    },
+    isValide () {
+      if ( this.emailValide() && this.passwordValide()) {
+        return true
+      }else{
+        return false
+      }
+    },
     verifier () {
       this.isLoading = true
-      auth.signInWithEmailAndPassword(this.user.email, this.user.password).then(
-        () => {
-          this.$router.push('/acceuil')
-        },
-        (err) => {
-          this.isLoading = false
-          switch (err.code) {
-            case 'auth/invalid-email':
-              this.etatEmail = true
-              this.etatPass = true
-              this.erreur = 'Adresse E-mail non valide.'
-              break
-            case 'auth/user-disabled':
-              this.etatEmail = true
-              this.etatPass = true
-              this.erreur = 'Utilisateur correspondant a été désactivé'
-              break
-            case 'auth/user-not-found':
-              this.etatEmail = true
-              this.etatPass = true
-              this.erreur = 'Aucun utilisateur correspondant.'
-              break
-            case 'auth/wrong-password':
-              this.etatPass = true
-              this.erreur = 'Mot de passe invalide.'
-              break
-          }
-        }
-      )
+      if (this.isValide()) {
+          auth.signInWithEmailAndPassword(this.email.valeur, this.password.valeur).then(
+            () => {
+                this.isLoading = false
+                this.alertSuccess('Connexion réussi')
+                this.$router.push('/acceuil')
+            },
+            (err) => {
+                this.isLoading = false
+                this.alertError(err.message)
+            }
+        )
+      }else{
+            this.isLoading = false
+            this.alertError('Oups!!!! Il y a des conditions qui ne sont pas valides')
+      }
+    },
+    alertError(message) {
+        this.$toast.open({
+            message: message,
+            position: 'is-bottom',
+            type: 'is-danger'
+        })
+    },
+    alertSuccess(message) {
+        this.$toast.open({
+            message: message,
+            position: 'is-bottom',
+            type: 'is-info'
+        })
     }
   }
 }
@@ -100,6 +145,9 @@ export default {
 #limiter {
   background-image: url("https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2Fbg-01.jpg?alt=media&token=0b8d4201-a03e-4135-84ec-ccaeaf5073f0");
   background-size: cover;
+}
+.button {
+  background-image: linear-gradient(to bottom,#aa4bfd,#a64bf4);
 }
 </style>
 

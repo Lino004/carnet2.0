@@ -36,35 +36,38 @@
                             :message="password.message">
                             <b-input type="password"
                                 v-model="password.valeur"
+                                placeholder="Mot de passe"
                                 password-reveal
                                 @input="passwordValide()">
                             </b-input>
                         </b-field>
                         
                         <!-- Confirmation du mot de passe -->
-                        <b-field label="Entrez votre Mot de passe"
-                            :type="passwordConfirme.type"
-                            :message="passwordConfirme.message">
-                            <b-input type="password"
-                                v-model="passwordConfirme.valeur"
-                                password-reveal
-                                @input="passwordConfirmeValide()">
-                            </b-input>
+                        <b-field label="Confirmer votre Mot de passe"
+                          :type="passwordConfirme.type"
+                          :message="passwordConfirme.message">
+                          <b-input type="password"
+                              v-model="passwordConfirme.valeur"
+                              placeholder="Mot de passe"
+                              password-reveal
+                              @input="passwordConfirmeValide()">
+                          </b-input>
                         </b-field>
 
 
                         <div class="text-right p-t-8 p-b-31">
-                            <p>Ou <router-link to="/login"><strong class="text-primary">allez à la page de connexion</strong></router-link></p>
+                          <p>Ou
+                            <router-link to="/login">
+                              <strong class="text-primary">allez à la page de connexion</strong>
+                            </router-link>
+                          </p>
                         </div>
 
-                        <div class="container-login100-form-btn">
-
-                            <div class="wrap-login100-form-btn">
-                                <div class="login100-form-bgbtn"></div>
-                                <button class="login100-form-btn" @click="inscrire()"> <i :class="{'fa fa-spinner fa-spin': isLoading}"> </i>S'inscrire</button>
-                            </div>
-
-                        </div>
+                        <button class="button is-block is-info is-large is-fullwidth is-rounded"
+                          :class="{'is-loading': isLoading}"
+                          @click.prevent="inscrire()">
+                          Inscription
+                        </button>
                     </div>
                 </form>
             </div>
@@ -165,6 +168,7 @@ export default {
             photoURL: "https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2Fcompte.png?alt=media&token=94e1cc48-c416-4918-affb-0ec99898eeef"
           }).then( () =>{
             this.isLoading = false
+            this.alertSuccess('Inscription réussi')
             this.$router.push('/acceuil')
           })
         }).catch(err => {
@@ -182,6 +186,13 @@ export default {
             position: 'is-bottom',
             type: 'is-danger'
         })
+    },
+    alertSuccess(message) {
+        this.$toast.open({
+            message: message,
+            position: 'is-bottom',
+            type: 'is-info'
+        })
     }
   }
 }
@@ -191,6 +202,9 @@ export default {
 #limiter {
   background-image: url("https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2Fbg-01.jpg?alt=media&token=0b8d4201-a03e-4135-84ec-ccaeaf5073f0");
   background-size: cover;
+}
+.button {
+  background-image: linear-gradient(to bottom,#aa4bfd,#a64bf4);
 }
 </style>
 <style src="../style/css/main.css"></style>
