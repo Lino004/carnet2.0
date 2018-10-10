@@ -99,6 +99,7 @@ export default {
 <style scoped>
 #limiter {
   background-image: url("https://firebasestorage.googleapis.com/v0/b/carnetdevoyage-2506.appspot.com/o/default%2Fbg-01.jpg?alt=media&token=0b8d4201-a03e-4135-84ec-ccaeaf5073f0");
+  background-size: cover;
 }
 </style>
 

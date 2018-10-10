@@ -156,9 +156,6 @@ export default {
             this.eventsDbRef.child(event.id).update({favori: event.favori})
         },
         supprimer (e) {
-            storage.ref(e.imageRef).delete().catch( (error) => {
-                this.alertError(error.message)
-            })
             this.eventsDbRef.child(e.id).remove().catch( (error) => {
                 this.alertError(error.message)
             })

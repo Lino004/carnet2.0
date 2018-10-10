@@ -129,15 +129,6 @@ export default {
         },
         supprimerEventsAlbum (album) {
             var eventsAlbumDbRef = db.ref('eventsAlbums/' + this.userId + '/' + album.id)
-            var events
-            eventsAlbumDbRef.on('child_added', snap => {
-                events.push({...snap.val(), id: snap.key})
-                events.forEach( (ev) =>{
-                    storage.ref().child(e.imageRef).delete().catch( (error) => {
-                        this.alertError(error.message)
-                    })
-                })
-            })
             eventsAlbumDbRef.remove().catch( (error) => {
                 this.alertError(error.message)
             })
