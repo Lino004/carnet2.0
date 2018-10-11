@@ -11,7 +11,7 @@
                             :message="email.message">
                             <b-input type="email"
                                 v-model="email.valeur"
-                                placeholder="email"
+                                placeholder="Email"
                                 @input="emailValide()">
                             </b-input>
                         </b-field>
@@ -34,7 +34,7 @@
                         <button class="button is-block is-info is-large is-fullwidth is-rounded"
                           :class="{'is-loading': isLoading}"
                           @click.prevent="verifier()">
-                          Inscription
+                          Connexion
                         </button>
                     </div>
                     <div class="txt1 text-center p-t-54 p-b-20">

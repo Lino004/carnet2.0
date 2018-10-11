@@ -7,11 +7,13 @@ import router from './router'
 import VueFire from 'vuefire'
 import store from './store'
 import Buefy from 'buefy'
+import UUID from 'vue-uuid'
 import 'buefy/dist/buefy.css'
 
 Vue.config.productionTip = false
 Vue.use(VueFire)
 Vue.use(Buefy)
+Vue.use(UUID)
 
 let app
 

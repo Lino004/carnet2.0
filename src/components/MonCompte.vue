@@ -6,21 +6,24 @@
     </header>
 
     <section class="modal-card-body">
-      <div class="tile is-ancestor" v-show="!view">
-        <div class="tile is-parent">
-            <div class="tile is-child">
-                <div class="columns is-mobile is-centered">
-                  <b-upload v-model="file" accept="image/jpeg" @input="upload(file[0])" :loading="isLoading">
-                    <figure class="is-centered image is-128x128">
-                      <img class="" :src="tempImage">
-                    </figure>
-                  </b-upload>
-                </div>
+      <div class="tile" v-show="!view">
+        <div class="tile is-child">
+            <div class="columns is-mobile is-centered">
+                <b-upload v-model="file" accept="image/jpeg" @input="upload(file[0])">
+                  <figure class="is-centered image is-128x128">
+                    <img :src="tempImage" id="id_img_profil">
+                  </figure>
+                </b-upload>
             </div>
+            <progress class="progress is-info"
+                :value="progressBar"
+                max="100"
+                v-show="isLoading">{{progressBar}}%
+            </progress>
         </div>
-        <div class="tile is-vertical is-parent">
+        <div class="tile is-child is-vertical">
             <b-field label="Pseudo :">
-              <p class="subtitle is-6"> {{user.displayName}} </p>
+              <p class="subtitle is-6"> {{user.displayName}}</p>
             </b-field>
             <b-field label="Email :">
               <p class="subtitle is-6"> {{user.email}} </p>
@@ -84,28 +87,33 @@
         password: '',
         uploadTask: null,
         isLoading: false,
+        // Barre de progression
+        progressBar: 0,
         tempImage: ''
       }
     },
     computed: {
       user () {
         return auth.currentUser
+      },
+      storageRefPhotoURLUser (){
+        return storage.ref('users/' + this.user.uid + '/profil/')
       }
     },
     methods: {
       upload (file) {
         this.isLoading = true
-        console.log('en cours uploadImage')
-        var uploadTask = storage.ref(this.user.uid + '/profile/' + file.name).put(file)
+        var idImg = this.$uuid.v1()
+        var uploadTask = this.storageRefPhotoURLUser.child(idImg + '.jpg').put(file)
         uploadTask.on('state_changed', snapshot => {
           var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          console.log('progress is ' + progress + '% done')
+          this.progressBar = progress
         },
-        null,
+        (error) =>{
+          alertError(error.message)
+        },
         () => {
           uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-            this.$emit('url', downloadURL)
-            console.log(downloadURL)
             this.updateImage(downloadURL)
           })
         })
@@ -162,5 +170,13 @@
   }
 </script>
 
-<style scoped></style>
+<style scoped>
+
+#id_img_profil {
+  position: absolute;
+  top: 15%;
+  height: 80%; 
+}
+
+</style>
 

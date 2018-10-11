@@ -2,13 +2,13 @@
     <div class="modal-card" style="width: auto">
 
         <header class="modal-card-head">
-            <p class="modal-card-title">Nouvel Événement</p>
+            <p class="modal-card-title">Nouvel Événement </p>
         </header>
 
         <section class="modal-card-body">
 
             <b-field class="file">
-                <b-upload v-model="files">
+                <b-upload v-model="files" accept="image/jpeg">
                     <a class="button is-info">
                         <b-icon icon="upload"></b-icon>
                         <span>Selectioner Image</span>
@@ -58,6 +58,11 @@
                 @click.prevent="upload(files[0])" 
                 v-show="champsRemplis">Ajouter
             </button>
+            <progress class="progress is-info"
+                :value="progressBar"
+                max="100"
+                v-show="isLoading">{{progressBar}}%
+            </progress>
         </footer>
     </div>
 </template>
@@ -89,6 +94,9 @@ export default {
             
             uploadTask: null,
             isLoading: false,
+
+            // Barre de progression
+            progressBar: 0,
             
             // Variable alert
             titreMessageAlert: 'Attention',
@@ -114,6 +122,9 @@ export default {
                 return true
             }
             return false
+        },
+        storageRefImgEvents () {
+            return storage.ref('users/' + this.userId + '/events/')
         }
     },
     methods: {
@@ -134,8 +145,9 @@ export default {
         },
         upload (file) {
             this.isLoading = true
-            this.uploadTask = storage.ref(this.userId + '/' + file.name).put(file)
-            this.newEven.imageRef = this.userId + '/' + file.name
+            var imgId = this.$uuid.v1()
+            this.uploadTask = this.storageRefImgEvents.child(imgId + '.jpg').put(file)
+            this.newEven.imageRef = imgId + '.jpg'
         },
         closeAddModal () {
             this.$parent.close()
@@ -153,6 +165,7 @@ export default {
             this.uploadTask.on('state_changed', snapshot => {
                 var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
                 console.log('progress is ' + progress + '% done')
+                this.progressBar = progress
             },
             null,
             () => {

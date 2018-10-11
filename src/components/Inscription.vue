@@ -14,7 +14,7 @@
                             :message="pseudo.message">
                             <b-input v-model="pseudo.valeur"
                               maxlength="30"
-                              placeholder="pseudo"
+                              placeholder="Pseudo"
                               @input="pseudoValide()">
                             </b-input>
                         </b-field>
@@ -25,7 +25,7 @@
                             :message="email.message">
                             <b-input type="email"
                                 v-model="email.valeur"
-                                placeholder="email"
+                                placeholder="Email"
                                 @input="emailValide()">
                             </b-input>
                         </b-field>
@@ -181,18 +181,18 @@ export default {
       }
     },
     alertError(message) {
-        this.$toast.open({
-            message: message,
-            position: 'is-bottom',
-            type: 'is-danger'
-        })
+      this.$toast.open({
+          message: message,
+          position: 'is-bottom',
+          type: 'is-danger'
+      })
     },
     alertSuccess(message) {
-        this.$toast.open({
-            message: message,
-            position: 'is-bottom',
-            type: 'is-info'
-        })
+      this.$toast.open({
+          message: message,
+          position: 'is-bottom',
+          type: 'is-info'
+      })
     }
   }
 }

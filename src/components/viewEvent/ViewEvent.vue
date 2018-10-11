@@ -100,7 +100,9 @@ export default {
             fenetreModalEdition: false,
             fenetreModalActive: false,
             isImageModalActive: false,
-            eventActu: []
+            eventActu: [],
+            isLoading: false,
+            isFullPage: false
         }
     },
     computed: {
@@ -119,6 +121,12 @@ export default {
         }
     },
     methods: {
+        openLoading() {
+            this.isLoading = true
+            setTimeout(() => {
+                this.isLoading = false
+            }, 10 * 1000)
+        },
         selectionner () {
             this.etatSelectCheckbox = true
         },

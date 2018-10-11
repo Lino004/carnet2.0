@@ -8,15 +8,14 @@
                     </a>
                 </div>
                 <div class="navbar-end d-flex align-items-center text-white">
-                    <span class="navbar-brand align-items-center"> {{user.displayName}} </span>
-
                     <div class="dropdown dropleft">
                         <div id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <b-icon icon="account-circle" 
-                                type="is-white" 
-                                size="is-medium" 
-                                slot="trigger">
-                            </b-icon>
+                            <div class="d-flex align-items-center">
+                                <a class="navbar-brand align-items-center"> {{user.displayName}} </a>
+                                <figure class="image is-48x48">
+                                    <img :src="user.photoURL" id="id_img_profil">
+                                </figure>
+                            </div>
                         </div>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item" @click="modalMonCompte = true">Mon compte</a>
@@ -85,8 +84,10 @@ margin-left:-100px;
     margin-bottom: 20px;
 }
 #compte{
-   margin-right:-40px; 
-   
+   margin-right:-40px;
+}
+#id_img_profil {
+  height: 80%; 
 }
 </style>
 
